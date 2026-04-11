@@ -21,13 +21,6 @@
             android:text="LOGIN" />
 
         <Button
-            android:id="@+id/btnProba"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="proba" />
-
-        <Button
             android:id="@+id/btnRegister"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -39,35 +32,31 @@
     <LinearLayout
         android:id="@+id/loginLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="gone"
-        android:layout_marginTop="24dp">
+        android:gravity="center_horizontal">
 
         <EditText
             android:id="@+id/etLoginUsername"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:hint="Username" />
 
         <EditText
             android:id="@+id/etLoginPassword"
-            android:layout_width="match_parent"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:hint="Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp" />
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/btnDoLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="LOGIN"
-            android:layout_marginTop="20dp" />
-
-
-
-
+            android:layout_marginTop="20dp"
+            android:text="LOGIN" />
     </LinearLayout>
 
     <!-- Register layout -->
@@ -79,34 +68,81 @@
         android:visibility="gone"
         android:layout_marginTop="24dp">
 
-        <EditText
-            android:id="@+id/etRegisterUsername"
+        <!-- Username -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Username" />
+            android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/etRegisterPassword"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Username"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/etRegisterUsername"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Username" />
+        </LinearLayout>
+
+        <!-- Email -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
 
-        <EditText
-            android:id="@+id/etRegisterConfirmPassword"
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Email"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/etRegisterEmail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Email"
+                android:inputType="textEmailAddress" />
+        </LinearLayout>
+
+        <!-- Password -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Confirm password"
-            android:inputType="textPassword"
-            android:layout_marginTop="12dp" />
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Password"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/etRegisterPassword"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Password"
+                android:inputType="textPassword" />
+        </LinearLayout>
+
+        <!-- Dugme -->
         <Button
             android:id="@+id/btnDoRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="REGISTER"
             android:layout_marginTop="20dp" />
+
     </LinearLayout>
 
 </LinearLayout>
