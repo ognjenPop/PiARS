@@ -21,6 +21,13 @@
             android:text="LOGIN" />
 
         <Button
+            android:id="@+id/btnProba"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="proba" />
+
+        <Button
             android:id="@+id/btnRegister"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -57,6 +64,10 @@
             android:layout_height="wrap_content"
             android:text="LOGIN"
             android:layout_marginTop="20dp" />
+
+
+
+
     </LinearLayout>
 
     <!-- Register layout -->
