@@ -1,12 +1,12 @@
 package ognjen.popovic.eventsapp;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,6 +22,10 @@ public class MainActivity extends AppCompatActivity {
 
     EditText etLoginUsername;
     EditText etLoginPassword;
+
+    EditText etRegisterUsername;
+    EditText etRegisterEmail;
+    EditText etRegisterPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +44,10 @@ public class MainActivity extends AppCompatActivity {
         etLoginUsername = findViewById(R.id.etLoginUsername);
         etLoginPassword = findViewById(R.id.etLoginPassword);
 
-        // Klik na LOGIN dugme (prikaz forme)
+        etRegisterUsername = findViewById(R.id.etRegisterUsername);
+        etRegisterEmail = findViewById(R.id.etRegisterEmail);
+        etRegisterPassword = findViewById(R.id.etRegisterPassword);
+
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -50,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Klik na REGISTER dugme (prikaz forme)
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // LOGIN logika
         btnDoLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,11 +73,38 @@ public class MainActivity extends AppCompatActivity {
                 String username = etLoginUsername.getText().toString();
                 String password = etLoginPassword.getText().toString();
 
-                if(username.equals("admin") && password.equals("admin")) {
-                    Toast.makeText(MainActivity.this, "Login uspešan", Toast.LENGTH_SHORT).show();
+                if (username.equals("admin") && password.equals("admin")) {
+
+                    Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("username", username);
+                    bundle.putString("email", "");
+
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
                 } else {
-                    Toast.makeText(MainActivity.this, "Pogrešan username ili password", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Pogresan username ili password", Toast.LENGTH_SHORT).show();
                 }
+            }
+        });
+
+        btnDoRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String username = etRegisterUsername.getText().toString();
+                String email = etRegisterEmail.getText().toString();
+
+                Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+
+                Bundle bundle = new Bundle();
+                bundle.putString("username", username);
+                bundle.putString("email", email);
+
+                intent.putExtras(bundle);
+                startActivity(intent);
             }
         });
     }
