@@ -1,13 +1,18 @@
 package ognjen.popovic.eventsapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class ProfileActivity extends AppCompatActivity {
 
     TextView tvProfileUsername;
     TextView tvProfileEmail;
+
+    Button btnPassword;
+    Button btnEndSession;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,10 +22,23 @@ public class ProfileActivity extends AppCompatActivity {
         tvProfileUsername = findViewById(R.id.tvProfileUsername);
         tvProfileEmail = findViewById(R.id.tvProfileEmail);
 
+        btnPassword = findViewById(R.id.btnPassword);
+        btnEndSession = findViewById(R.id.btnEndSession);
+
         String username = getIntent().getStringExtra("username");
         String email = getIntent().getStringExtra("email");
 
-        tvProfileUsername.setText("Username: " + username);
-        tvProfileEmail.setText("Email: " + email);
+        tvProfileUsername.setText(username);
+        tvProfileEmail.setText(email);
+
+        btnEndSession.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+
+        btnPassword.setOnClickListener(view -> {
+            Intent intent = new Intent(ProfileActivity.this, PasswordActivity.class);
+            startActivity(intent);
+        });
     }
 }
