@@ -1,5 +1,38 @@
 <resources>
-    <string name="app_name">Events App</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+        <string name="app_name">EventsApp</string>
+        <string name="login_upper">LOGIN</string>
+        <string name="register_upper">REGISTER</string>
+        <string name="username">Username</string>
+        <string name="email">Email</string>
+        <string name="password">Password</string>
+
+        <string name="welcome">Welcome</string>
+        <string name="default_username">admin</string>
+        <string name="events_upper">EVENTS</string>
+        <string name="my_events_upper">MY EVENTS</string>
+        <string name="friends_upper">FRIENDS</string>
+
+        <string name="no_events">Nema dostupnih događaja</string>
+
+        <string name="interested_events_upper">INTERESTED EVENTS</string>
+        <string name="attending_events_upper">ATTENDING EVENTS</string>
+        <string name="my_profile_upper">MY PROFILE</string>
+
+        <string name="interested_events">Interested Events</string>
+
+        <string name="attending_events">Attending Events</string>
+
+
+        <string name="default_email">email@gmail.com</string>
+        <string name="password_upper">PASSWORD</string>
+        <string name="end_session_upper">END SESSION</string>
+
+        <string name="change_password">Change password</string>
+        <string name="current_password">Current password</string>
+        <string name="new_password">New password</string>
+        <string name="save_upper">SAVE</string>
+
+
 </resources>

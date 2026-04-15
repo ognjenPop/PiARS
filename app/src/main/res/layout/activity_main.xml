@@ -18,14 +18,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="LOGIN" />
+            android:text="@string/login_upper" />
 
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="REGISTER" />
+            android:text="@string/register_upper" />
     </LinearLayout>
 
     <!-- Login layout -->
@@ -41,22 +41,28 @@
             android:id="@+id/etLoginUsername"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:hint="Username" />
+            android:hint="@string/username" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
 
         <EditText
             android:id="@+id/etLoginPassword"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
 
         <Button
             android:id="@+id/btnDoLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="LOGIN" />
+            android:text="@string/login_upper" />
     </LinearLayout>
 
     <!-- Register layout -->
@@ -65,8 +71,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:layout_marginTop="24dp">
+        android:visibility="gone">
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
 
         <!-- Username -->
         <LinearLayout
@@ -78,7 +87,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Username"
+                android:text="@string/username"
                 android:textSize="18sp" />
 
             <EditText
@@ -86,21 +95,24 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Username" />
+                android:hint="@string/username" />
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
 
         <!-- Email -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Email"
+                android:text="@string/email"
                 android:textSize="18sp" />
 
             <EditText
@@ -108,22 +120,25 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:inputType="textEmailAddress" />
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="12dp" />
 
         <!-- Password -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="12dp">
+            android:orientation="horizontal">
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Password"
+                android:text="@string/password"
                 android:textSize="18sp" />
 
             <EditText
@@ -131,17 +146,20 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:inputType="textPassword" />
         </LinearLayout>
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="20dp" />
 
         <!-- Dugme -->
         <Button
             android:id="@+id/btnDoRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="REGISTER"
-            android:layout_marginTop="20dp" />
+            android:text="@string/register_upper" />
 
     </LinearLayout>
 
