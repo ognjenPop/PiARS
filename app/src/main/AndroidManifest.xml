@@ -12,6 +12,9 @@
         android:theme="@style/Theme.EventsApp"
         tools:targetApi="31">
         <activity
+            android:name=".RatingActivity"
+            android:exported="false" />
+        <activity
             android:name=".EventDetailsActivity"
             android:exported="false" />
         <activity
@@ -33,6 +36,9 @@
             android:name=".EventsActivity"
             android:exported="false" />
         <activity
+            android:name=".RatingActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -44,3 +50,5 @@
     </application>
 
 </manifest>
+
+

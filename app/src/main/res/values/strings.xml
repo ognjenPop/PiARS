@@ -61,4 +61,10 @@
 
         <string name="no_interested_events">Nemate zainteresovanih događaja</string>
 
+        <string name="upcoming_events">Predstojeći događaji</string>
+        <string name="past_events">Prošli događaji</string>
+        <string name="no_attending_events">Nemate prijavljenih događaja</string>
+        <string name="rate_upper">OCENI</string>
+        <string name="rating_title">Oceni događaj</string>
+
 </resources>
