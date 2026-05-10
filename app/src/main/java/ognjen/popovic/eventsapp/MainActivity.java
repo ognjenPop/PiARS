@@ -48,11 +48,10 @@ public class MainActivity extends AppCompatActivity {
         etRegisterEmail = findViewById(R.id.etRegisterEmail);
         etRegisterPassword = findViewById(R.id.etRegisterPassword);
 
-
-
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startLayout.setVisibility(View.GONE);
                 loginLayout.setVisibility(View.VISIBLE);
                 registerLayout.setVisibility(View.GONE);
@@ -62,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 startLayout.setVisibility(View.GONE);
                 registerLayout.setVisibility(View.VISIBLE);
                 loginLayout.setVisibility(View.GONE);
@@ -72,22 +72,45 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String username = etLoginUsername.getText().toString();
-                String password = etLoginPassword.getText().toString();
+                String username =
+                        etLoginUsername.getText().toString();
 
-                if (username.equals("admin") && password.equals("admin")) {
+                String password =
+                        etLoginPassword.getText().toString();
 
-                    Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+                if (username.equals("admin")
+                        && password.equals("admin")) {
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("username", username);
-                    bundle.putString("email", "");
+                    Intent intent =
+                            new Intent(
+                                    MainActivity.this,
+                                    EventsActivity.class
+                            );
+
+                    Bundle bundle =
+                            new Bundle();
+
+                    bundle.putString(
+                            "username",
+                            username
+                    );
+
+                    bundle.putString(
+                            "email",
+                            ""
+                    );
 
                     intent.putExtras(bundle);
+
                     startActivity(intent);
 
                 } else {
-                    Toast.makeText(MainActivity.this, "Pogresan username ili password", Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Pogresan username ili password",
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
             }
         });
@@ -96,18 +119,61 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                String username = etRegisterUsername.getText().toString();
-                String email = etRegisterEmail.getText().toString();
+                String username =
+                        etRegisterUsername.getText().toString();
 
-                Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+                String email =
+                        etRegisterEmail.getText().toString();
 
-                Bundle bundle = new Bundle();
-                bundle.putString("username", username);
-                bundle.putString("email", email);
+                Intent intent =
+                        new Intent(
+                                MainActivity.this,
+                                EventsActivity.class
+                        );
+
+                Bundle bundle =
+                        new Bundle();
+
+                bundle.putString(
+                        "username",
+                        username
+                );
+
+                bundle.putString(
+                        "email",
+                        email
+                );
 
                 intent.putExtras(bundle);
+
                 startActivity(intent);
             }
         });
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        startLayout.setVisibility(View.VISIBLE);
+        loginLayout.setVisibility(View.GONE);
+        registerLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        if (loginLayout.getVisibility() == View.VISIBLE
+                || registerLayout.getVisibility() == View.VISIBLE) {
+
+            startLayout.setVisibility(View.VISIBLE);
+            loginLayout.setVisibility(View.GONE);
+            registerLayout.setVisibility(View.GONE);
+
+        } else {
+
+            super.onBackPressed();
+        }
+    }
+
 }

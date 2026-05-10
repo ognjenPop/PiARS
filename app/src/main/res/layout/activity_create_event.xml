@@ -8,11 +8,61 @@
     android:background="@color/light_gray"
     android:padding="16dp">
 
-    <TextView
+    <EditText
+        android:id="@+id/etCreateName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/add_event"
-        android:textColor="@color/gray_text"
-        android:textSize="24sp" />
+        android:minHeight="48dp"
+        android:hint="@string/event_name_hint" />
+
+    <EditText
+        android:id="@+id/etCreateDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="@string/description_hint" />
+
+    <EditText
+        android:id="@+id/etCreateLocation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="@string/location_hint" />
+
+    <EditText
+        android:id="@+id/etCreateDateTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="@string/date_time_hint" />
+
+    <Spinner
+        android:id="@+id/spinnerCreateCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:entries="@array/event_categories" />
+
+    <CheckBox
+        android:id="@+id/cbPromoted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:text="@string/promoted_event" />
+
+    <EditText
+        android:id="@+id/etCreateCapacity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="48dp"
+        android:hint="@string/capacity_hint"
+        android:inputType="number"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnCreateEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/create_event_upper" />
 
 </LinearLayout>

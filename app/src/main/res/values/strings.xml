@@ -72,4 +72,23 @@
         <string name="rating_saved">Ocena je sačuvana.</string>
         <string name="star">★</string>
 
+        <string name="event_name_hint">Naziv događaja</string>
+        <string name="description_hint">Opis</string>
+        <string name="location_hint">Lokacija</string>
+        <string name="date_time_hint">dd.MM.yyyy HH:mm</string>
+        <string name="capacity_hint">Kapacitet</string>
+        <string name="promoted_event">Promoted event</string>
+        <string name="create_event_upper">KREIRAJ EVENT</string>
+        <string name="required_fields_error">Popunite sva obavezna polja.</string>
+        <string name="capacity_error">Unesite ispravan kapacitet.</string>
+        <string name="event_created">Događaj uspešno kreiran.</string>
+
+        <string-array name="event_categories">
+                <item>Party</item>
+                <item>Festival</item>
+                <item>Stand-Up &amp; Theater</item>
+                <item>Concert</item>
+                <item>Exhibition</item>
+        </string-array>
+
 </resources>
