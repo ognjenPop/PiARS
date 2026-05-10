@@ -34,5 +34,21 @@
         <string name="new_password">New password</string>
         <string name="save_upper">SAVE</string>
 
+        <string name="all">SVE</string>
+        <string name="party">PARTY</string>
+        <string name="festival">FESTIVAL</string>
+        <string name="concert">CONCERT</string>
+        <string name="theater">STAND-UP &amp; THEATER</string>
+        <string name="exhibition">EXHIBITION</string>
+        <string name="add_event">DODAJ EVENT</string>
+
+        <string name="featured">FEATURED</string>
+        <string name="event_name">Naziv događaja</string>
+        <string name="event_category">Kategorija</string>
+        <string name="event_location">Lokacija</string>
+        <string name="event_date_time">Datum i vreme</string>
+        <string name="free_places">Slobodnih mesta</string>
+
+        <string name="free_places_format">Slobodnih mesta: %1$d/%2$d</string>
 
 </resources>

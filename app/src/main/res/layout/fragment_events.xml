@@ -1,15 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="@color/light_gray">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/no_events"
-        android:textColor="@color/gray_text"
-        android:textSize="22sp"
-        android:layout_gravity="center" />
+    <!-- KATEGORIJE -->
 
-</FrameLayout>
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnAll"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/all" />
+
+            <Button
+                android:id="@+id/btnParty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/party" />
+
+            <Button
+                android:id="@+id/btnFestival"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/festival" />
+
+            <Button
+                android:id="@+id/btnConcert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/concert" />
+
+            <Button
+                android:id="@+id/btnTheater"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/theater" />
+
+            <Button
+                android:id="@+id/btnExhibition"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/exhibition" />
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
+    <!-- DODAJ EVENT -->
+
+    <Button
+        android:id="@+id/btnAddEvent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/add_event" />
+
+    <!-- LISTA EVENTOVA -->
+
+    <ListView
+        android:id="@+id/eventsListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@color/gray_text"
+        android:dividerHeight="1dp" />
+
+</LinearLayout>
