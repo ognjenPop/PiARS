@@ -6,9 +6,7 @@
     android:orientation="vertical"
     android:background="@color/light_gray">
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="24dp" />
+
 
     <TextView
         android:id="@+id/tvWelcome"
@@ -20,9 +18,6 @@
         android:textSize="32sp"
         android:textStyle="bold" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="6dp" />
 
     <TextView
         android:id="@+id/tvUsername"
@@ -33,9 +28,6 @@
         android:textColor="@color/gray_text"
         android:textSize="22sp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="24dp" />
 
     <FrameLayout
         android:id="@+id/fragmentContainer"
@@ -43,41 +35,31 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="16dp" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp">
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/btnEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/purple_200"
+            android:backgroundTint="@color/black"
             android:text="@string/events_upper"
             android:textColor="@color/white" />
 
-        <Space
-            android:layout_width="4dp"
-            android:layout_height="match_parent" />
 
         <Button
             android:id="@+id/btnMyEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/purple_200"
+            android:backgroundTint="@color/black"
             android:text="@string/my_events_upper"
             android:textColor="@color/white" />
 
-        <Space
-            android:layout_width="4dp"
-            android:layout_height="match_parent" />
 
         <Button
             android:id="@+id/btnFriends"

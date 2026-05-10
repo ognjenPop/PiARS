@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp"
     android:background="@color/light_gray">
 
     <!-- Prvi red: dva dugmeta -->
@@ -17,35 +16,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/purple_200"
-            android:text="@string/interested_events_upper"
-            android:textColor="@color/white" />
+            android:text="@string/interested_events_upper"/>
 
-        <Space
-            android:layout_width="4dp"
-            android:layout_height="match_parent" />
 
         <Button
             android:id="@+id/btnAttendingEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:backgroundTint="@color/purple_200"
-            android:text="@string/attending_events_upper"
-            android:textColor="@color/white" />
+            android:text="@string/attending_events_upper"/>
     </LinearLayout>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="12dp" />
 
     <!-- Drugi red: jedno dugme -->
     <Button
         android:id="@+id/btnMyProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:backgroundTint="@color/purple_200"
-        android:text="@string/my_profile_upper"
-        android:textColor="@color/white" />
+        android:text="@string/my_profile_upper" />
 
 </LinearLayout>

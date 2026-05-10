@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    >
 
     <!-- Pocetni layout -->
     <LinearLayout
@@ -32,36 +32,30 @@
     <LinearLayout
         android:id="@+id/loginLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:gravity="center_horizontal">
+        android:visibility="gone">
 
         <EditText
             android:id="@+id/etLoginUsername"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="12dp" />
 
         <EditText
             android:id="@+id/etLoginPassword"
-            android:layout_width="250dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:inputType="textPassword" />
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
 
         <Button
             android:id="@+id/btnDoLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/login_upper" />
     </LinearLayout>
 
@@ -73,9 +67,6 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="24dp" />
 
         <!-- Username -->
         <LinearLayout
@@ -98,9 +89,6 @@
                 android:hint="@string/username" />
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="12dp" />
 
         <!-- Email -->
         <LinearLayout
@@ -124,9 +112,6 @@
                 android:inputType="textEmailAddress" />
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="12dp" />
 
         <!-- Password -->
         <LinearLayout
@@ -150,15 +135,14 @@
                 android:inputType="textPassword" />
         </LinearLayout>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="20dp" />
+
 
         <!-- Dugme -->
         <Button
             android:id="@+id/btnDoRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:text="@string/register_upper" />
 
     </LinearLayout>

@@ -3,51 +3,39 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/light_gray"
-    android:gravity="center">
+    android:background="@color/light_gray">
 
     <TextView
         android:id="@+id/tvProfileUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/default_username"
-        android:textColor="@color/gray_text"
+        android:layout_gravity="center"
         android:textSize="22sp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="12dp" />
 
     <TextView
         android:id="@+id/tvProfileEmail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/default_email"
-        android:textColor="@color/gray_text"
+        android:layout_gravity="center"
         android:textSize="22sp" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="20dp" />
 
     <Button
         android:id="@+id/btnPassword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/password_upper"
-        android:backgroundTint="@color/purple_200"
-        android:textColor="@color/white" />
+        android:layout_gravity="center"
+        android:text="@string/password_upper" />
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="12dp" />
 
     <Button
         android:id="@+id/btnEndSession"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/end_session_upper"
-        android:backgroundTint="@color/purple_200"
-        android:textColor="@color/white" />
+        android:layout_gravity="center"
+        android:text="@string/end_session_upper" />
 
 </LinearLayout>

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -22,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
 
     EditText etLoginUsername;
     EditText etLoginPassword;
-
     EditText etRegisterUsername;
     EditText etRegisterEmail;
     EditText etRegisterPassword;
@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
         etRegisterUsername = findViewById(R.id.etRegisterUsername);
         etRegisterEmail = findViewById(R.id.etRegisterEmail);
         etRegisterPassword = findViewById(R.id.etRegisterPassword);
+
+
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
