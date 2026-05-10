@@ -51,4 +51,14 @@
 
         <string name="free_places_format">Slobodnih mesta: %1$d/%2$d</string>
 
+        <string name="event_description">Opis događaja</string>
+        <string name="no_ratings">Još uvek nema ocena</string>
+        <string name="average_rating_format">Prosečna ocena: %1$.1f (%2$d ocena)</string>
+        <string name="interested_upper">INTERESTED</string>
+        <string name="attending_upper">ATTENDING</string>
+        <string name="added_to_interested">Dodat u zainteresovane.</string>
+        <string name="added_to_attending">Prijavili ste se na događaj.</string>
+
+        <string name="no_interested_events">Nemate zainteresovanih događaja</string>
+
 </resources>
