@@ -12,7 +12,6 @@ import android.widget.ListView;
 public class EventsFragment extends Fragment {
 
     private ListView eventsListView;
-
     private EventAdapter adapter;
 
     private Button btnAll;
@@ -70,55 +69,65 @@ public class EventsFragment extends Fragment {
 
         eventsListView.setAdapter(adapter);
 
-        // FILTERI
+        setActiveButton(btnAll);
 
-        btnAll.setOnClickListener(v ->
-                adapter.setEvents(
-                        AppData.getSortedEvents()
-                )
-        );
+        btnAll.setOnClickListener(v -> {
+            adapter.setEvents(
+                    AppData.getSortedEvents()
+            );
 
-        btnParty.setOnClickListener(v ->
-                adapter.setEvents(
-                        AppData.getSortedEventsByCategory(
-                                "Party"
-                        )
-                )
-        );
+            setActiveButton(btnAll);
+        });
 
-        btnFestival.setOnClickListener(v ->
-                adapter.setEvents(
-                        AppData.getSortedEventsByCategory(
-                                "Festival"
-                        )
-                )
-        );
+        btnParty.setOnClickListener(v -> {
+            adapter.setEvents(
+                    AppData.getSortedEventsByCategory(
+                            "Party"
+                    )
+            );
 
-        btnConcert.setOnClickListener(v ->
-                adapter.setEvents(
-                        AppData.getSortedEventsByCategory(
-                                "Concert"
-                        )
-                )
-        );
+            setActiveButton(btnParty);
+        });
 
-        btnTheater.setOnClickListener(v ->
-                adapter.setEvents(
-                        AppData.getSortedEventsByCategory(
-                                "Stand-Up & Theater"
-                        )
-                )
-        );
+        btnFestival.setOnClickListener(v -> {
+            adapter.setEvents(
+                    AppData.getSortedEventsByCategory(
+                            "Festival"
+                    )
+            );
 
-        btnExhibition.setOnClickListener(v ->
-                adapter.setEvents(
-                        AppData.getSortedEventsByCategory(
-                                "Exhibition"
-                        )
-                )
-        );
+            setActiveButton(btnFestival);
+        });
 
-        // DODAJ EVENT
+        btnConcert.setOnClickListener(v -> {
+            adapter.setEvents(
+                    AppData.getSortedEventsByCategory(
+                            "Concert"
+                    )
+            );
+
+            setActiveButton(btnConcert);
+        });
+
+        btnTheater.setOnClickListener(v -> {
+            adapter.setEvents(
+                    AppData.getSortedEventsByCategory(
+                            "Stand-Up & Theater"
+                    )
+            );
+
+            setActiveButton(btnTheater);
+        });
+
+        btnExhibition.setOnClickListener(v -> {
+            adapter.setEvents(
+                    AppData.getSortedEventsByCategory(
+                            "Exhibition"
+                    )
+            );
+
+            setActiveButton(btnExhibition);
+        });
 
         btnAddEvent.setOnClickListener(v -> {
 
@@ -130,8 +139,6 @@ public class EventsFragment extends Fragment {
 
             startActivity(intent);
         });
-
-        // EVENT DETAILS
 
         eventsListView.setOnItemClickListener(
                 (parent, view1, position, id) -> {
@@ -154,5 +161,17 @@ public class EventsFragment extends Fragment {
                 });
 
         return view;
+    }
+
+    private void setActiveButton(Button activeButton) {
+
+        btnAll.setBackgroundResource(R.color.disabled);
+        btnParty.setBackgroundResource(R.color.disabled);
+        btnFestival.setBackgroundResource(R.color.disabled);
+        btnConcert.setBackgroundResource(R.color.disabled);
+        btnTheater.setBackgroundResource(R.color.disabled);
+        btnExhibition.setBackgroundResource(R.color.disabled);
+
+        activeButton.setBackgroundResource(R.color.purple_500);
     }
 }
