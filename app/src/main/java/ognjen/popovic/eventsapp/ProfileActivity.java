@@ -34,6 +34,7 @@ public class ProfileActivity extends AppCompatActivity {
         btnEndSession.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
             startActivity(intent);
+            finish();
         });
 
         btnPassword.setOnClickListener(view -> {

@@ -21,6 +21,7 @@ public class Event {
     private double averageRating;
     private int ratingCount;
 
+    //Konstruktor za promoted eventove
     public Event(String name, String description, String location,
                  String dateTime, String category, int imageResId,
                  boolean isPromoted, int capacity, int attendingCount) {
@@ -37,7 +38,7 @@ public class Event {
         this.averageRating = 0;
         this.ratingCount = 0;
     }
-
+    //Konstruktor za regular eventove
     public Event(String name, String description, String location,
                  String dateTime, String category, int imageResId) {
 

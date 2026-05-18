@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+//punimo podatke
 
 public class EventDetailsActivity extends AppCompatActivity {
 

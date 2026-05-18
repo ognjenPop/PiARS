@@ -11,7 +11,10 @@ import android.widget.ListView;
 
 public class EventsFragment extends Fragment {
 
+    // prikazivanje elementa preko liste
+
     private ListView eventsListView;
+
     private EventAdapter adapter;
 
     private Button btnAll;
@@ -72,6 +75,7 @@ public class EventsFragment extends Fragment {
         setActiveButton(btnAll);
 
         btnAll.setOnClickListener(v -> {
+
             adapter.setEvents(
                     AppData.getSortedEvents()
             );
@@ -80,6 +84,7 @@ public class EventsFragment extends Fragment {
         });
 
         btnParty.setOnClickListener(v -> {
+
             adapter.setEvents(
                     AppData.getSortedEventsByCategory(
                             "Party"
@@ -90,6 +95,7 @@ public class EventsFragment extends Fragment {
         });
 
         btnFestival.setOnClickListener(v -> {
+
             adapter.setEvents(
                     AppData.getSortedEventsByCategory(
                             "Festival"
@@ -100,6 +106,7 @@ public class EventsFragment extends Fragment {
         });
 
         btnConcert.setOnClickListener(v -> {
+
             adapter.setEvents(
                     AppData.getSortedEventsByCategory(
                             "Concert"
@@ -110,6 +117,7 @@ public class EventsFragment extends Fragment {
         });
 
         btnTheater.setOnClickListener(v -> {
+
             adapter.setEvents(
                     AppData.getSortedEventsByCategory(
                             "Stand-Up & Theater"
@@ -120,6 +128,7 @@ public class EventsFragment extends Fragment {
         });
 
         btnExhibition.setOnClickListener(v -> {
+
             adapter.setEvents(
                     AppData.getSortedEventsByCategory(
                             "Exhibition"
@@ -161,6 +170,18 @@ public class EventsFragment extends Fragment {
                 });
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (adapter != null) {
+
+            adapter.setEvents(
+                    AppData.getSortedEvents()
+            );
+        }
     }
 
     private void setActiveButton(Button activeButton) {

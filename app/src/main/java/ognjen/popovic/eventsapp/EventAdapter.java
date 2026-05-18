@@ -1,5 +1,7 @@
 package ognjen.popovic.eventsapp;
 
+//Punimo jedan red liste eventova podacima, punimo podatke
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +52,7 @@ public class EventAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        ViewHolder holder;
+        ViewHolder holder;  //Box sa podacima koje stavljamo
 
         if (convertView == null) {
             convertView = LayoutInflater.from(context)
