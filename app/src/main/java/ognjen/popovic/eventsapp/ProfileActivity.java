@@ -39,6 +39,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnPassword.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, PasswordActivity.class);
+            intent.putExtra("username", tvProfileUsername.getText().toString());
             startActivity(intent);
         });
     }

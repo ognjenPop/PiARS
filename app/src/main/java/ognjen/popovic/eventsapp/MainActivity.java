@@ -27,10 +27,14 @@ public class MainActivity extends AppCompatActivity {
     EditText etRegisterEmail;
     EditText etRegisterPassword;
 
+    DatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        databaseHelper = new DatabaseHelper(this);
 
         startLayout = findViewById(R.id.startLayout);
         loginLayout = findViewById(R.id.loginLayout);
@@ -51,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 startLayout.setVisibility(View.GONE);
                 loginLayout.setVisibility(View.VISIBLE);
                 registerLayout.setVisibility(View.GONE);
@@ -61,7 +64,6 @@ public class MainActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 startLayout.setVisibility(View.GONE);
                 registerLayout.setVisibility(View.VISIBLE);
                 loginLayout.setVisibility(View.GONE);
@@ -71,41 +73,32 @@ public class MainActivity extends AppCompatActivity {
         btnDoLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String username = etLoginUsername.getText().toString();
+                String password = etLoginPassword.getText().toString();
 
-                String username =
-                        etLoginUsername.getText().toString();
+                if (username.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Unesite username i password",
+                            Toast.LENGTH_SHORT
+                    ).show();
 
-                String password =
-                        etLoginPassword.getText().toString();
+                    return;
+                }
 
-                if (username.equals("admin")
-                        && password.equals("admin")) {
+                boolean loginSuccessful = databaseHelper.loginUser(username, password);
 
-                    Intent intent =
-                            new Intent(
-                                    MainActivity.this,
-                                    EventsActivity.class
-                            );
+                if (loginSuccessful) {
+                    Intent intent = new Intent(MainActivity.this, EventsActivity.class);
 
-                    Bundle bundle =
-                            new Bundle();
-
-                    bundle.putString(
-                            "username",
-                            username
-                    );
-
-                    bundle.putString(
-                            "email",
-                            ""
-                    );
+                    Bundle bundle = new Bundle();
+                    bundle.putString("username", username);
+                    bundle.putString("email", "");
 
                     intent.putExtras(bundle);
-
                     startActivity(intent);
 
                 } else {
-
                     Toast.makeText(
                             MainActivity.this,
                             "Pogresan username ili password",
@@ -118,35 +111,65 @@ public class MainActivity extends AppCompatActivity {
         btnDoRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String username = etRegisterUsername.getText().toString();
+                String email = etRegisterEmail.getText().toString();
+                String password = etRegisterPassword.getText().toString();
 
-                String username =
-                        etRegisterUsername.getText().toString();
+                if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Popunite sva polja",
+                            Toast.LENGTH_SHORT
+                    ).show();
 
-                String email =
-                        etRegisterEmail.getText().toString();
+                    return;
+                }
 
-                Intent intent =
-                        new Intent(
-                                MainActivity.this,
-                                EventsActivity.class
-                        );
+                if (databaseHelper.checkUsernameExists(username)) {
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Username vec postoji",
+                            Toast.LENGTH_SHORT
+                    ).show();
 
-                Bundle bundle =
-                        new Bundle();
+                    return;
+                }
 
-                bundle.putString(
-                        "username",
-                        username
-                );
+                if (databaseHelper.checkEmailExists(email)) {
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Email vec postoji",
+                            Toast.LENGTH_SHORT
+                    ).show();
 
-                bundle.putString(
-                        "email",
-                        email
-                );
+                    return;
+                }
 
-                intent.putExtras(bundle);
+                boolean insertSuccessful = databaseHelper.insertUser(username, email, password);
 
-                startActivity(intent);
+                if (insertSuccessful) {
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Registracija uspesna",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("username", username);
+                    bundle.putString("email", email);
+
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+
+                } else {
+                    Toast.makeText(
+                            MainActivity.this,
+                            "Greska prilikom registracije",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
             }
         });
     }
@@ -162,7 +185,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         if (loginLayout.getVisibility() == View.VISIBLE
                 || registerLayout.getVisibility() == View.VISIBLE) {
 
@@ -171,9 +193,7 @@ public class MainActivity extends AppCompatActivity {
             registerLayout.setVisibility(View.GONE);
 
         } else {
-
             super.onBackPressed();
         }
     }
-
 }
