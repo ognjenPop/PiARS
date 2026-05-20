@@ -7,7 +7,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-//punimo podatke
 
 public class EventDetailsActivity extends AppCompatActivity {
 
@@ -24,78 +23,46 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button btnDetailsInterested;
     private Button btnDetailsAttending;
 
+    private DatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event_details);
 
-        imgDetailsEvent =
-                findViewById(R.id.imgDetailsEvent);
+        databaseHelper = new DatabaseHelper(this);
 
-        tvDetailsName =
-                findViewById(R.id.tvDetailsName);
+        imgDetailsEvent = findViewById(R.id.imgDetailsEvent);
 
-        tvDetailsCategory =
-                findViewById(R.id.tvDetailsCategory);
+        tvDetailsName = findViewById(R.id.tvDetailsName);
+        tvDetailsCategory = findViewById(R.id.tvDetailsCategory);
+        tvDetailsLocation = findViewById(R.id.tvDetailsLocation);
+        tvDetailsDateTime = findViewById(R.id.tvDetailsDateTime);
+        tvDetailsDescription = findViewById(R.id.tvDetailsDescription);
+        tvDetailsFreePlaces = findViewById(R.id.tvDetailsFreePlaces);
+        tvDetailsRating = findViewById(R.id.tvDetailsRating);
 
-        tvDetailsLocation =
-                findViewById(R.id.tvDetailsLocation);
+        btnDetailsInterested = findViewById(R.id.btnDetailsInterested);
+        btnDetailsAttending = findViewById(R.id.btnDetailsAttending);
 
-        tvDetailsDateTime =
-                findViewById(R.id.tvDetailsDateTime);
+        String eventName = getIntent().getStringExtra("eventName");
 
-        tvDetailsDescription =
-                findViewById(R.id.tvDetailsDescription);
-
-        tvDetailsFreePlaces =
-                findViewById(R.id.tvDetailsFreePlaces);
-
-        tvDetailsRating =
-                findViewById(R.id.tvDetailsRating);
-
-        btnDetailsInterested =
-                findViewById(R.id.btnDetailsInterested);
-
-        btnDetailsAttending =
-                findViewById(R.id.btnDetailsAttending);
-
-        String eventName =
-                getIntent().getStringExtra("eventName");
-
-        Event event =
-                AppData.findByName(eventName);
+        Event event = databaseHelper.findEventByName(eventName);
 
         if (event != null) {
 
-            imgDetailsEvent.setImageResource(
-                    event.getImageResId()
-            );
+            imgDetailsEvent.setImageResource(event.getImageResId());
 
-            tvDetailsName.setText(
-                    event.getName()
-            );
-
-            tvDetailsCategory.setText(
-                    event.getCategory()
-            );
-
-            tvDetailsLocation.setText(
-                    event.getLocation()
-            );
-
-            tvDetailsDateTime.setText(
-                    event.getDateTime()
-            );
-
-            tvDetailsDescription.setText(
-                    event.getDescription()
-            );
+            tvDetailsName.setText(event.getName());
+            tvDetailsCategory.setText(event.getCategory());
+            tvDetailsLocation.setText(event.getLocation());
+            tvDetailsDateTime.setText(event.getDateTime());
+            tvDetailsDescription.setText(event.getDescription());
 
             if (event.isPromoted()) {
 
                 int freePlaces =
-                        event.getCapacity()
-                                - event.getAttendingCount();
+                        event.getCapacity() - event.getAttendingCount();
 
                 tvDetailsFreePlaces.setVisibility(View.VISIBLE);
 
@@ -114,9 +81,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             if (event.getRatingCount() == 0) {
 
-                tvDetailsRating.setText(
-                        R.string.no_ratings
-                );
+                tvDetailsRating.setText(R.string.no_ratings);
 
             } else {
 

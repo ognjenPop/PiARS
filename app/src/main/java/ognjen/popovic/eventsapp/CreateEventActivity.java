@@ -3,11 +3,14 @@ package ognjen.popovic.eventsapp;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class CreateEventActivity extends AppCompatActivity {
 
@@ -54,6 +57,8 @@ public class CreateEventActivity extends AppCompatActivity {
         btnCreateEvent =
                 findViewById(R.id.btnCreateEvent);
 
+        loadCategoriesFromDatabase();
+
         cbPromoted.setOnCheckedChangeListener(
                 (buttonView, isChecked) -> {
 
@@ -67,6 +72,24 @@ public class CreateEventActivity extends AppCompatActivity {
         btnCreateEvent.setOnClickListener(v ->
                 createEvent()
         );
+    }
+
+    private void loadCategoriesFromDatabase() {
+        ArrayList<String> categories =
+                databaseHelper.getAllCategories();
+
+        ArrayAdapter<String> adapter =
+                new ArrayAdapter<>(
+                        this,
+                        android.R.layout.simple_spinner_item,
+                        categories
+                );
+
+        adapter.setDropDownViewResource(
+                android.R.layout.simple_spinner_dropdown_item
+        );
+
+        spinnerCreateCategory.setAdapter(adapter);
     }
 
     private void createEvent() {
@@ -90,6 +113,17 @@ public class CreateEventActivity extends AppCompatActivity {
                 etCreateDateTime.getText()
                         .toString()
                         .trim();
+
+        if (spinnerCreateCategory.getSelectedItem() == null) {
+
+            Toast.makeText(
+                    this,
+                    R.string.required_fields_error,
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
 
         String category =
                 spinnerCreateCategory

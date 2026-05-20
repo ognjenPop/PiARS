@@ -279,6 +279,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return events;
     }
 
+    public Event findEventByName(String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_EVENTS,
+                null,
+                COLUMN_EVENT_NAME + " = ?",
+                new String[]{name},
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            Event event = createEventFromCursor(cursor);
+            cursor.close();
+
+            return event;
+        }
+
+        cursor.close();
+
+        return null;
+    }
+
     public ArrayList<String> getAllCategories() {
         ArrayList<String> categories = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();

@@ -36,12 +36,18 @@
         android:minHeight="48dp"
         android:hint="@string/date_time_hint" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/category"
+        android:textSize="18sp" />
+
     <Spinner
         android:id="@+id/spinnerCreateCategory"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
-        android:entries="@array/event_categories" />
+        android:contentDescription="@string/category" />
 
     <CheckBox
         android:id="@+id/cbPromoted"
