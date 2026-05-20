@@ -7,16 +7,26 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class InterestedEventsActivity extends AppCompatActivity {
 
     private TextView tvNoInterestedEvents;
     private ListView listInterestedEvents;
     private EventAdapter adapter;
 
+    private DatabaseHelper databaseHelper;
+
+    private String username;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_interested_events);
+
+        databaseHelper = new DatabaseHelper(this);
+
+        username = getIntent().getStringExtra("username");
 
         tvNoInterestedEvents =
                 findViewById(R.id.tvNoInterestedEvents);
@@ -24,14 +34,17 @@ public class InterestedEventsActivity extends AppCompatActivity {
         listInterestedEvents =
                 findViewById(R.id.listInterestedEvents);
 
+        ArrayList<Event> interestedEvents =
+                databaseHelper.getInterestedEvents(username);
+
         adapter = new EventAdapter(
                 this,
-                AppData.interestedEvents
+                interestedEvents
         );
 
         listInterestedEvents.setAdapter(adapter);
 
-        if (AppData.interestedEvents.isEmpty()) {
+        if (interestedEvents.isEmpty()) {
 
             tvNoInterestedEvents.setVisibility(View.VISIBLE);
             listInterestedEvents.setVisibility(View.GONE);
@@ -57,6 +70,11 @@ public class InterestedEventsActivity extends AppCompatActivity {
                     intent.putExtra(
                             "eventName",
                             event.getName()
+                    );
+
+                    intent.putExtra(
+                            "username",
+                            username
                     );
 
                     startActivity(intent);

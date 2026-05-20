@@ -12,6 +12,9 @@ public class EventsActivity extends AppCompatActivity {
     Button btnEvents;
     Button btnMyEvents;
 
+    private String username;
+    private String email;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,16 +27,60 @@ public class EventsActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
 
         if (bundle != null) {
-            String username = bundle.getString("username");
+            username = bundle.getString("username");
+            email = bundle.getString("email");
+
             tvUsername.setText(username);
         }
 
-        // Podrazumevano prikazi EventsFragment
-        loadFragment(new EventsFragment());
+        loadEventsFragment();
 
-        btnEvents.setOnClickListener(view -> loadFragment(new EventsFragment()));
+        btnEvents.setOnClickListener(view ->
+                loadEventsFragment()
+        );
 
-        btnMyEvents.setOnClickListener(view -> loadFragment(new MyEventsFragment()));
+        btnMyEvents.setOnClickListener(view ->
+                loadMyEventsFragment()
+        );
+    }
+
+    private void loadEventsFragment() {
+        EventsFragment fragment =
+                new EventsFragment();
+
+        Bundle bundle =
+                new Bundle();
+
+        bundle.putString(
+                "username",
+                username
+        );
+
+        fragment.setArguments(bundle);
+
+        loadFragment(fragment);
+    }
+
+    private void loadMyEventsFragment() {
+        MyEventsFragment fragment =
+                new MyEventsFragment();
+
+        Bundle bundle =
+                new Bundle();
+
+        bundle.putString(
+                "username",
+                username
+        );
+
+        bundle.putString(
+                "email",
+                email
+        );
+
+        fragment.setArguments(bundle);
+
+        loadFragment(fragment);
     }
 
     private void loadFragment(Fragment fragment) {

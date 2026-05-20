@@ -25,6 +25,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private DatabaseHelper databaseHelper;
 
+    private String username;
+    private String eventName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +48,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         btnDetailsInterested = findViewById(R.id.btnDetailsInterested);
         btnDetailsAttending = findViewById(R.id.btnDetailsAttending);
 
-        String eventName = getIntent().getStringExtra("eventName");
+        eventName = getIntent().getStringExtra("eventName");
+        username = getIntent().getStringExtra("username");
 
         Event event = databaseHelper.findEventByName(eventName);
 
@@ -95,20 +99,82 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         }
 
-        btnDetailsInterested.setOnClickListener(v ->
+        btnDetailsInterested.setOnClickListener(v -> {
+
+            boolean success =
+                    databaseHelper.addInterested(username, eventName);
+
+            if (success) {
+
                 Toast.makeText(
                         EventDetailsActivity.this,
                         R.string.added_to_interested,
                         Toast.LENGTH_SHORT
-                ).show()
-        );
+                ).show();
 
-        btnDetailsAttending.setOnClickListener(v ->
+            } else {
+
+                Toast.makeText(
+                        EventDetailsActivity.this,
+                        R.string.already_added_or_error,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+
+        btnDetailsAttending.setOnClickListener(v -> {
+
+            boolean success =
+                    databaseHelper.addAttending(username, eventName);
+
+            if (success) {
+
                 Toast.makeText(
                         EventDetailsActivity.this,
                         R.string.added_to_attending,
                         Toast.LENGTH_SHORT
-                ).show()
-        );
+                ).show();
+
+                refreshEventData();
+
+            } else {
+
+                Toast.makeText(
+                        EventDetailsActivity.this,
+                        R.string.attending_error,
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+    private void refreshEventData() {
+
+        Event event =
+                databaseHelper.findEventByName(eventName);
+
+        if (event == null) {
+            return;
+        }
+
+        if (event.isPromoted()) {
+
+            int freePlaces =
+                    event.getCapacity() - event.getAttendingCount();
+
+            tvDetailsFreePlaces.setVisibility(View.VISIBLE);
+
+            tvDetailsFreePlaces.setText(
+                    getString(
+                            R.string.free_places_format,
+                            freePlaces,
+                            event.getCapacity()
+                    )
+            );
+
+        } else {
+
+            tvDetailsFreePlaces.setVisibility(View.GONE);
+        }
     }
 }

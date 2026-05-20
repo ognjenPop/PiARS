@@ -25,6 +25,8 @@ public class EventsFragment extends Fragment {
 
     private DatabaseHelper databaseHelper;
 
+    private String username;
+
     public EventsFragment() {
 
     }
@@ -40,6 +42,10 @@ public class EventsFragment extends Fragment {
                         container,
                         false
                 );
+
+        if (getArguments() != null) {
+            username = getArguments().getString("username");
+        }
 
         databaseHelper =
                 new DatabaseHelper(getContext());
@@ -167,6 +173,11 @@ public class EventsFragment extends Fragment {
                     intent.putExtra(
                             "eventName",
                             event.getName()
+                    );
+
+                    intent.putExtra(
+                            "username",
+                            username
                     );
 
                     startActivity(intent);

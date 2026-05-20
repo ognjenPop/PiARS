@@ -92,5 +92,8 @@
         </string-array>
 
         <string name="event_create_error">Greška prilikom kreiranja događaja</string>
+        <string name="already_added_or_error">Već postoji zapis ili je došlo do greške</string>
+        <string name="attending_error">Nije moguće prijaviti prisustvo</string>
+        <string name="category">Kategorija</string>
 
 </resources>

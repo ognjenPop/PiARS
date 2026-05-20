@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+
 public class AttendingEventsActivity extends AppCompatActivity {
 
     private TextView tvNoAttendingEvents;
@@ -17,10 +19,20 @@ public class AttendingEventsActivity extends AppCompatActivity {
     private LinearLayout upcomingEventsLayout;
     private LinearLayout pastEventsLayout;
 
+    private DatabaseHelper databaseHelper;
+
+    private String username;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_attending_events);
+
+        databaseHelper =
+                new DatabaseHelper(this);
+
+        username =
+                getIntent().getStringExtra("username");
 
         tvNoAttendingEvents =
                 findViewById(R.id.tvNoAttendingEvents);
@@ -37,21 +49,28 @@ public class AttendingEventsActivity extends AppCompatActivity {
         pastEventsLayout =
                 findViewById(R.id.pastEventsLayout);
 
-        if (AppData.attendingEvents.isEmpty()) {
+        ArrayList<Event> attendingEvents =
+                databaseHelper.getAttendingEvents(username);
+
+        if (attendingEvents.isEmpty()) {
 
             tvNoAttendingEvents.setVisibility(View.VISIBLE);
             tvUpcomingHeader.setVisibility(View.GONE);
             tvPastHeader.setVisibility(View.GONE);
+            upcomingEventsLayout.setVisibility(View.GONE);
+            pastEventsLayout.setVisibility(View.GONE);
 
             return;
         }
 
         tvNoAttendingEvents.setVisibility(View.GONE);
+        upcomingEventsLayout.setVisibility(View.VISIBLE);
+        pastEventsLayout.setVisibility(View.VISIBLE);
 
         boolean hasUpcoming = false;
         boolean hasPast = false;
 
-        for (Event event : AppData.attendingEvents) {
+        for (Event event : attendingEvents) {
 
             if (event.isPast()) {
 
@@ -72,12 +91,41 @@ public class AttendingEventsActivity extends AppCompatActivity {
         tvPastHeader.setVisibility(
                 hasPast ? View.VISIBLE : View.GONE
         );
+
+        upcomingEventsLayout.setVisibility(
+                hasUpcoming ? View.VISIBLE : View.GONE
+        );
+
+        pastEventsLayout.setVisibility(
+                hasPast ? View.VISIBLE : View.GONE
+        );
     }
 
     private void addUpcomingEvent(Event event) {
 
         LinearLayout itemLayout =
                 createTextEventLayout(event);
+
+        itemLayout.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(
+                            AttendingEventsActivity.this,
+                            EventDetailsActivity.class
+                    );
+
+            intent.putExtra(
+                    "eventName",
+                    event.getName()
+            );
+
+            intent.putExtra(
+                    "username",
+                    username
+            );
+
+            startActivity(intent);
+        });
 
         upcomingEventsLayout.addView(itemLayout);
     }
@@ -108,6 +156,27 @@ public class AttendingEventsActivity extends AppCompatActivity {
                 )
         );
 
+        textLayout.setOnClickListener(v -> {
+
+            Intent intent =
+                    new Intent(
+                            AttendingEventsActivity.this,
+                            EventDetailsActivity.class
+                    );
+
+            intent.putExtra(
+                    "eventName",
+                    event.getName()
+            );
+
+            intent.putExtra(
+                    "username",
+                    username
+            );
+
+            startActivity(intent);
+        });
+
         Button btnRate =
                 new Button(this);
 
@@ -133,6 +202,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
             intent.putExtra(
                     "eventName",
                     event.getName()
+            );
+
+            intent.putExtra(
+                    "username",
+                    username
             );
 
             startActivity(intent);

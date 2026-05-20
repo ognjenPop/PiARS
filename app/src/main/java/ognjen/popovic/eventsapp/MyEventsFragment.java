@@ -14,14 +14,23 @@ public class MyEventsFragment extends Fragment {
     Button btnAttendingEvents;
     Button btnMyProfile;
 
+    private String username;
+    private String email;
+
     public MyEventsFragment() {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_my_events, container, false);
+
+        if (getArguments() != null) {
+            username = getArguments().getString("username");
+            email = getArguments().getString("email");
+        }
 
         btnInterestedEvents = view.findViewById(R.id.btnInterestedEvents);
         btnAttendingEvents = view.findViewById(R.id.btnAttendingEvents);
@@ -31,7 +40,17 @@ public class MyEventsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getActivity(), InterestedEventsActivity.class);
+                Intent intent =
+                        new Intent(
+                                getActivity(),
+                                InterestedEventsActivity.class
+                        );
+
+                intent.putExtra(
+                        "username",
+                        username
+                );
+
                 startActivity(intent);
             }
         });
@@ -40,7 +59,17 @@ public class MyEventsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getActivity(), AttendingEventsActivity.class);
+                Intent intent =
+                        new Intent(
+                                getActivity(),
+                                AttendingEventsActivity.class
+                        );
+
+                intent.putExtra(
+                        "username",
+                        username
+                );
+
                 startActivity(intent);
             }
         });
@@ -49,19 +78,22 @@ public class MyEventsFragment extends Fragment {
             @Override
             public void onClick(View v) {
 
-                Bundle bundleFromActivity = getActivity().getIntent().getExtras();
+                Intent intent =
+                        new Intent(
+                                getActivity(),
+                                ProfileActivity.class
+                        );
 
-                String username = "";
-                String email = "";
+                intent.putExtra(
+                        "username",
+                        username
+                );
 
-                if (bundleFromActivity != null) {
-                    username = bundleFromActivity.getString("username");
-                    email = bundleFromActivity.getString("email");
-                }
+                intent.putExtra(
+                        "email",
+                        email
+                );
 
-                Intent intent = new Intent(getActivity(), ProfileActivity.class);
-                intent.putExtra("username", username);
-                intent.putExtra("email", email);
                 startActivity(intent);
             }
         });
