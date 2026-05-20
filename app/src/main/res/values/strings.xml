@@ -91,4 +91,6 @@
                 <item>Exhibition</item>
         </string-array>
 
+        <string name="event_create_error">Greška prilikom kreiranja događaja</string>
+
 </resources>

@@ -11,8 +11,6 @@ import android.widget.ListView;
 
 public class EventsFragment extends Fragment {
 
-    // prikazivanje elementa preko liste
-
     private ListView eventsListView;
 
     private EventAdapter adapter;
@@ -24,6 +22,8 @@ public class EventsFragment extends Fragment {
     private Button btnTheater;
     private Button btnExhibition;
     private Button btnAddEvent;
+
+    private DatabaseHelper databaseHelper;
 
     public EventsFragment() {
 
@@ -40,6 +40,9 @@ public class EventsFragment extends Fragment {
                         container,
                         false
                 );
+
+        databaseHelper =
+                new DatabaseHelper(getContext());
 
         eventsListView =
                 view.findViewById(R.id.eventsListView);
@@ -67,7 +70,7 @@ public class EventsFragment extends Fragment {
 
         adapter = new EventAdapter(
                 getContext(),
-                AppData.getSortedEvents()
+                databaseHelper.getAllEvents()
         );
 
         eventsListView.setAdapter(adapter);
@@ -77,7 +80,7 @@ public class EventsFragment extends Fragment {
         btnAll.setOnClickListener(v -> {
 
             adapter.setEvents(
-                    AppData.getSortedEvents()
+                    databaseHelper.getAllEvents()
             );
 
             setActiveButton(btnAll);
@@ -86,7 +89,7 @@ public class EventsFragment extends Fragment {
         btnParty.setOnClickListener(v -> {
 
             adapter.setEvents(
-                    AppData.getSortedEventsByCategory(
+                    databaseHelper.getEventsByCategory(
                             "Party"
                     )
             );
@@ -97,7 +100,7 @@ public class EventsFragment extends Fragment {
         btnFestival.setOnClickListener(v -> {
 
             adapter.setEvents(
-                    AppData.getSortedEventsByCategory(
+                    databaseHelper.getEventsByCategory(
                             "Festival"
                     )
             );
@@ -108,7 +111,7 @@ public class EventsFragment extends Fragment {
         btnConcert.setOnClickListener(v -> {
 
             adapter.setEvents(
-                    AppData.getSortedEventsByCategory(
+                    databaseHelper.getEventsByCategory(
                             "Concert"
                     )
             );
@@ -119,7 +122,7 @@ public class EventsFragment extends Fragment {
         btnTheater.setOnClickListener(v -> {
 
             adapter.setEvents(
-                    AppData.getSortedEventsByCategory(
+                    databaseHelper.getEventsByCategory(
                             "Stand-Up & Theater"
                     )
             );
@@ -130,7 +133,7 @@ public class EventsFragment extends Fragment {
         btnExhibition.setOnClickListener(v -> {
 
             adapter.setEvents(
-                    AppData.getSortedEventsByCategory(
+                    databaseHelper.getEventsByCategory(
                             "Exhibition"
                     )
             );
@@ -176,11 +179,13 @@ public class EventsFragment extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (adapter != null) {
+        if (adapter != null && databaseHelper != null) {
 
             adapter.setEvents(
-                    AppData.getSortedEvents()
+                    databaseHelper.getAllEvents()
             );
+
+            setActiveButton(btnAll);
         }
     }
 

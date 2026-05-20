@@ -21,10 +21,14 @@ public class CreateEventActivity extends AppCompatActivity {
     private CheckBox cbPromoted;
     private Button btnCreateEvent;
 
+    private DatabaseHelper databaseHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_event);
+
+        databaseHelper = new DatabaseHelper(this);
 
         etCreateName =
                 findViewById(R.id.etCreateName);
@@ -68,16 +72,24 @@ public class CreateEventActivity extends AppCompatActivity {
     private void createEvent() {
 
         String name =
-                etCreateName.getText().toString().trim();
+                etCreateName.getText()
+                        .toString()
+                        .trim();
 
         String description =
-                etCreateDescription.getText().toString().trim();
+                etCreateDescription.getText()
+                        .toString()
+                        .trim();
 
         String location =
-                etCreateLocation.getText().toString().trim();
+                etCreateLocation.getText()
+                        .toString()
+                        .trim();
 
         String dateTime =
-                etCreateDateTime.getText().toString().trim();
+                etCreateDateTime.getText()
+                        .toString()
+                        .trim();
 
         String category =
                 spinnerCreateCategory
@@ -159,14 +171,26 @@ public class CreateEventActivity extends AppCompatActivity {
                     );
         }
 
-        AppData.allEvents.add(newEvent);
+        boolean insertSuccessful =
+                databaseHelper.insertEvent(newEvent);
 
-        Toast.makeText(
-                this,
-                R.string.event_created,
-                Toast.LENGTH_SHORT
-        ).show();
+        if (insertSuccessful) {
 
-        finish();
+            Toast.makeText(
+                    this,
+                    R.string.event_created,
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            finish();
+
+        } else {
+
+            Toast.makeText(
+                    this,
+                    R.string.event_create_error,
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
     }
 }
