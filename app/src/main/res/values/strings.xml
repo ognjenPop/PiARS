@@ -95,5 +95,6 @@
         <string name="already_added_or_error">Već postoji zapis ili je došlo do greške</string>
         <string name="attending_error">Nije moguće prijaviti prisustvo</string>
         <string name="category">Kategorija</string>
+        <string name="rating_error">Ocena nije sačuvana ili ste već ocenili ovaj događaj</string>
 
 </resources>

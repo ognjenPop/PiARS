@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "EventsApp.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 5;
 
     public static final String TABLE_USERS = "users";
 
@@ -44,6 +44,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String STATUS_INTERESTED = "ZAINTERESOVAN";
     public static final String STATUS_ATTENDING = "PRISUSTVUJE";
+
+    public static final String TABLE_RATINGS = "ratings";
+
+    public static final String COLUMN_RATING_ID = "id";
+    public static final String COLUMN_RATING_USER_ID = "userId";
+    public static final String COLUMN_RATING_EVENT_ID = "eventId";
+    public static final String COLUMN_RATING_VALUE = "rating";
 
     private static final String CREATE_TABLE_USERS =
             "CREATE TABLE " + TABLE_USERS + " (" +
@@ -95,6 +102,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_ATTENDANCE_EVENT_ID + ")" +
                     ");";
 
+    private static final String CREATE_TABLE_RATINGS =
+            "CREATE TABLE " + TABLE_RATINGS + " (" +
+                    COLUMN_RATING_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_RATING_USER_ID + " INTEGER NOT NULL, " +
+                    COLUMN_RATING_EVENT_ID + " INTEGER NOT NULL, " +
+                    COLUMN_RATING_VALUE + " INTEGER NOT NULL CHECK(" +
+                    COLUMN_RATING_VALUE + " BETWEEN 1 AND 5), " +
+                    "FOREIGN KEY(" + COLUMN_RATING_USER_ID + ") REFERENCES " +
+                    TABLE_USERS + "(" + COLUMN_USER_ID + "), " +
+                    "FOREIGN KEY(" + COLUMN_RATING_EVENT_ID + ") REFERENCES " +
+                    TABLE_EVENTS + "(" + COLUMN_EVENT_ID + "), " +
+                    "UNIQUE(" + COLUMN_RATING_USER_ID + ", " +
+                    COLUMN_RATING_EVENT_ID + ")" +
+                    ");";
+
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -110,11 +132,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_USERS);
         db.execSQL(CREATE_TABLE_EVENTS);
         db.execSQL(CREATE_TABLE_ATTENDANCE);
+        db.execSQL(CREATE_TABLE_RATINGS);
         insertInitialEvents(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RATINGS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ATTENDANCE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_EVENTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
@@ -613,6 +637,113 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor.close();
 
         return events;
+    }
+
+    public boolean addRating(String username, String eventName, int rating) {
+        if (rating < 1 || rating > 5) {
+            return false;
+        }
+
+        int userId = getUserIdByUsername(username);
+        int eventId = getEventIdByName(eventName);
+
+        if (userId == -1 || eventId == -1) {
+            return false;
+        }
+
+        if (hasUserRatedEvent(userId, eventId)) {
+            return false;
+        }
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.beginTransaction();
+
+        try {
+            ContentValues ratingValues = new ContentValues();
+            ratingValues.put(COLUMN_RATING_USER_ID, userId);
+            ratingValues.put(COLUMN_RATING_EVENT_ID, eventId);
+            ratingValues.put(COLUMN_RATING_VALUE, rating);
+
+            long insertResult =
+                    db.insert(TABLE_RATINGS, null, ratingValues);
+
+            if (insertResult == -1) {
+                return false;
+            }
+
+            updateEventRatingData(db, eventId);
+
+            db.setTransactionSuccessful();
+
+            return true;
+
+        } finally {
+            db.endTransaction();
+        }
+    }
+
+    private boolean hasUserRatedEvent(int userId, int eventId) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_RATINGS,
+                null,
+                COLUMN_RATING_USER_ID + " = ? AND " +
+                        COLUMN_RATING_EVENT_ID + " = ?",
+                new String[]{
+                        String.valueOf(userId),
+                        String.valueOf(eventId)
+                },
+                null,
+                null,
+                null
+        );
+
+        boolean exists = cursor.getCount() > 0;
+
+        cursor.close();
+
+        return exists;
+    }
+
+    private void updateEventRatingData(SQLiteDatabase db, int eventId) {
+        String query =
+                "SELECT AVG(" + COLUMN_RATING_VALUE + ") AS averageRating, " +
+                        "COUNT(" + COLUMN_RATING_VALUE + ") AS ratingCount " +
+                        "FROM " + TABLE_RATINGS + " " +
+                        "WHERE " + COLUMN_RATING_EVENT_ID + " = ?";
+
+        Cursor cursor =
+                db.rawQuery(
+                        query,
+                        new String[]{String.valueOf(eventId)}
+                );
+
+        if (cursor.moveToFirst()) {
+            double averageRating =
+                    cursor.getDouble(
+                            cursor.getColumnIndexOrThrow("averageRating")
+                    );
+
+            int ratingCount =
+                    cursor.getInt(
+                            cursor.getColumnIndexOrThrow("ratingCount")
+                    );
+
+            ContentValues values = new ContentValues();
+            values.put(COLUMN_EVENT_AVERAGE_RATING, averageRating);
+            values.put(COLUMN_EVENT_RATING_COUNT, ratingCount);
+
+            db.update(
+                    TABLE_EVENTS,
+                    values,
+                    COLUMN_EVENT_ID + " = ?",
+                    new String[]{String.valueOf(eventId)}
+            );
+        }
+
+        cursor.close();
     }
 
     private Event createEventFromCursor(Cursor cursor) {

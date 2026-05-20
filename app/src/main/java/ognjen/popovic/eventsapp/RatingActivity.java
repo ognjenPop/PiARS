@@ -21,12 +21,18 @@ public class RatingActivity extends AppCompatActivity {
 
     private int selectedRating = 0;
 
-    private Event event;
+    private DatabaseHelper databaseHelper;
+
+    private String username;
+    private String eventName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating);
+
+        databaseHelper =
+                new DatabaseHelper(this);
 
         tvRatingEventName =
                 findViewById(R.id.tvRatingEventName);
@@ -49,23 +55,33 @@ public class RatingActivity extends AppCompatActivity {
         btnConfirmRating =
                 findViewById(R.id.btnConfirmRating);
 
-        String eventName =
+        eventName =
                 getIntent().getStringExtra("eventName");
+
+        username =
+                getIntent().getStringExtra("username");
 
         tvRatingEventName.setText(eventName);
 
-        event =
-                AppData.findByName(eventName);
+        btnStar1.setOnClickListener(v ->
+                selectRating(1)
+        );
 
-        btnStar1.setOnClickListener(v -> selectRating(1));
+        btnStar2.setOnClickListener(v ->
+                selectRating(2)
+        );
 
-        btnStar2.setOnClickListener(v -> selectRating(2));
+        btnStar3.setOnClickListener(v ->
+                selectRating(3)
+        );
 
-        btnStar3.setOnClickListener(v -> selectRating(3));
+        btnStar4.setOnClickListener(v ->
+                selectRating(4)
+        );
 
-        btnStar4.setOnClickListener(v -> selectRating(4));
-
-        btnStar5.setOnClickListener(v -> selectRating(5));
+        btnStar5.setOnClickListener(v ->
+                selectRating(5)
+        );
 
         btnConfirmRating.setOnClickListener(v -> {
 
@@ -77,11 +93,17 @@ public class RatingActivity extends AppCompatActivity {
                         Toast.LENGTH_SHORT
                 ).show();
 
-            } else {
+                return;
+            }
 
-                if (event != null) {
-                    event.addRating(selectedRating);
-                }
+            boolean success =
+                    databaseHelper.addRating(
+                            username,
+                            eventName,
+                            selectedRating
+                    );
+
+            if (success) {
 
                 Toast.makeText(
                         RatingActivity.this,
@@ -90,6 +112,14 @@ public class RatingActivity extends AppCompatActivity {
                 ).show();
 
                 finish();
+
+            } else {
+
+                Toast.makeText(
+                        RatingActivity.this,
+                        R.string.rating_error,
+                        Toast.LENGTH_SHORT
+                ).show();
             }
         });
 
