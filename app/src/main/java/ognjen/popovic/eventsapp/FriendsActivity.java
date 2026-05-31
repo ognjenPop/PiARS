@@ -139,10 +139,29 @@ public class FriendsActivity extends AppCompatActivity {
 
         textView.setTextSize(16);
 
-        String text =
-                username + " je oznacio dogadjaj \"" +
-                        eventName + "\" kao " +
-                        commitment;
+        String text;
+
+        if (commitment.equals(DatabaseHelper.STATUS_ATTENDING)) {
+
+            text =
+                    username +
+                            " is also attending " +
+                            eventName;
+
+        } else if (commitment.equals(DatabaseHelper.STATUS_INTERESTED)) {
+
+            text =
+                    username +
+                            " is also interested in " +
+                            eventName;
+
+        } else {
+
+            text =
+                    username +
+                            " has activity on " +
+                            eventName;
+        }
 
         textView.setText(text);
 
