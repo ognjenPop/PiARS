@@ -14,6 +14,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
 public class EventsFragment extends Fragment {
 
     private ListView eventsListView;
@@ -113,57 +116,42 @@ public class EventsFragment extends Fragment {
 
         btnParty.setOnClickListener(v -> {
 
-            adapter.setEvents(
-                    databaseHelper.getEventsByCategory(
-                            "Party"
-                    )
+            loadEventsByCategoryFromServer(
+                    "Party",
+                    btnParty
             );
-
-            setActiveButton(btnParty);
         });
 
         btnFestival.setOnClickListener(v -> {
 
-            adapter.setEvents(
-                    databaseHelper.getEventsByCategory(
-                            "Festival"
-                    )
+            loadEventsByCategoryFromServer(
+                    "Festival",
+                    btnFestival
             );
-
-            setActiveButton(btnFestival);
         });
 
         btnConcert.setOnClickListener(v -> {
 
-            adapter.setEvents(
-                    databaseHelper.getEventsByCategory(
-                            "Concert"
-                    )
+            loadEventsByCategoryFromServer(
+                    "Concert",
+                    btnConcert
             );
-
-            setActiveButton(btnConcert);
         });
 
         btnTheater.setOnClickListener(v -> {
 
-            adapter.setEvents(
-                    databaseHelper.getEventsByCategory(
-                            "Stand-Up & Theater"
-                    )
+            loadEventsByCategoryFromServer(
+                    "Stand-Up & Theater",
+                    btnTheater
             );
-
-            setActiveButton(btnTheater);
         });
 
         btnExhibition.setOnClickListener(v -> {
 
-            adapter.setEvents(
-                    databaseHelper.getEventsByCategory(
-                            "Exhibition"
-                    )
+            loadEventsByCategoryFromServer(
+                    "Exhibition",
+                    btnExhibition
             );
-
-            setActiveButton(btnExhibition);
         });
 
         btnAddEvent.setOnClickListener(v -> {
@@ -266,6 +254,74 @@ public class EventsFragment extends Fragment {
                 );
             }
         });
+    }
+
+    private void loadEventsByCategoryFromServer(String category,
+                                                Button activeButton) {
+
+        String encodedCategory;
+
+        try {
+            encodedCategory =
+                    URLEncoder.encode(category, "UTF-8");
+
+        } catch (UnsupportedEncodingException e) {
+
+            encodedCategory =
+                    category;
+        }
+
+        serverHelper.getArrayRequest(
+                "/events/" + encodedCategory,
+                new ServerHelper.ServerArrayResponseListener() {
+                    @Override
+                    public void onSuccess(JSONArray response) {
+
+                        try {
+                            for (int i = 0; i < response.length(); i++) {
+
+                                JSONObject eventObject =
+                                        response.getJSONObject(i);
+
+                                Event event =
+                                        createEventFromJson(eventObject);
+
+                                databaseHelper.insertOrUpdateServerEvent(event);
+                            }
+
+                            adapter.setEvents(
+                                    databaseHelper.getEventsByCategory(category)
+                            );
+
+                            setActiveButton(activeButton);
+
+                        } catch (JSONException e) {
+
+                            Toast.makeText(
+                                    getContext(),
+                                    "Greska prilikom citanja kategorije sa servera",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+                        }
+                    }
+
+                    @Override
+                    public void onError(String error) {
+
+                        Toast.makeText(
+                                getContext(),
+                                "Server nije dostupan, prikazujem lokalnu kategoriju",
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        adapter.setEvents(
+                                databaseHelper.getEventsByCategory(category)
+                        );
+
+                        setActiveButton(activeButton);
+                    }
+                }
+        );
     }
 
     private Event createEventFromJson(JSONObject eventObject) throws JSONException {
