@@ -157,7 +157,7 @@ public class FriendsActivity extends AppCompatActivity {
 
         } else {
 
-            text =
+            text  =
                     username +
                             " has activity on " +
                             eventName;
