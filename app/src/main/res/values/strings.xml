@@ -97,4 +97,8 @@
         <string name="category">Kategorija</string>
         <string name="rating_error">Ocena nije sačuvana ili ste već ocenili ovaj događaj</string>
 
+        <string name="friends_activity_upper">FRIENDS ACTIVITY</string>
+        <string name="no_friends_activity">Nema aktivnosti prijatelja</string>
+
+
 </resources>

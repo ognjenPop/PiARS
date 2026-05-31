@@ -8,6 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class EventsFragment extends Fragment {
 
@@ -24,6 +29,7 @@ public class EventsFragment extends Fragment {
     private Button btnAddEvent;
 
     private DatabaseHelper databaseHelper;
+    private ServerHelper serverHelper;
 
     private String username;
     private String serverUserId;
@@ -51,6 +57,9 @@ public class EventsFragment extends Fragment {
 
         databaseHelper =
                 new DatabaseHelper(getContext());
+
+        serverHelper =
+                new ServerHelper(getContext());
 
         eventsListView =
                 view.findViewById(R.id.eventsListView);
@@ -85,11 +94,11 @@ public class EventsFragment extends Fragment {
 
         setActiveButton(btnAll);
 
+        loadEventsFromServer();
+
         btnAll.setOnClickListener(v -> {
 
-            adapter.setEvents(
-                    databaseHelper.getAllEvents()
-            );
+            loadEventsFromServer();
 
             setActiveButton(btnAll);
         });
@@ -183,6 +192,11 @@ public class EventsFragment extends Fragment {
                     );
 
                     intent.putExtra(
+                            "serverEventId",
+                            event.getServerEventId()
+                    );
+
+                    intent.putExtra(
                             "username",
                             username
                     );
@@ -198,15 +212,139 @@ public class EventsFragment extends Fragment {
         return view;
     }
 
+    private void loadEventsFromServer() {
+
+        serverHelper.getArrayRequest("/events", new ServerHelper.ServerArrayResponseListener() {
+            @Override
+            public void onSuccess(JSONArray response) {
+
+                try {
+                    for (int i = 0; i < response.length(); i++) {
+
+                        JSONObject eventObject =
+                                response.getJSONObject(i);
+
+                        Event event =
+                                createEventFromJson(eventObject);
+
+                        databaseHelper.insertOrUpdateServerEvent(event);
+                    }
+
+                    adapter.setEvents(
+                            databaseHelper.getAllEvents()
+                    );
+
+                } catch (JSONException e) {
+
+                    Toast.makeText(
+                            getContext(),
+                            "Greska prilikom citanja dogadjaja sa servera",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+
+                Toast.makeText(
+                        getContext(),
+                        "Server nije dostupan, prikazujem lokalne dogadjaje",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                adapter.setEvents(
+                        databaseHelper.getAllEvents()
+                );
+            }
+        });
+    }
+
+    private Event createEventFromJson(JSONObject eventObject) throws JSONException {
+
+        String serverEventId =
+                eventObject.getString("_id");
+
+        String name =
+                eventObject.getString("name");
+
+        String description =
+                eventObject.optString("description", "");
+
+        String location =
+                eventObject.getString("location");
+
+        String eventTime =
+                eventObject.getString("eventTime");
+
+        String category =
+                eventObject.getString("category");
+
+        boolean promoted =
+                eventObject.optBoolean("promoted", false);
+
+        int capacity =
+                eventObject.optInt("capacity", 0);
+
+        int numberOfAttendees =
+                eventObject.optInt("numberOfAttendees", 0);
+
+        double avgRating =
+                eventObject.optDouble("avgRating", 0);
+
+        int numberOfRatings =
+                eventObject.optInt("numberOfRatings", 0);
+
+        int imageResId =
+                getImageResIdByCategory(category);
+
+        return new Event(
+                serverEventId,
+                name,
+                description,
+                location,
+                eventTime,
+                category,
+                imageResId,
+                promoted,
+                capacity,
+                numberOfAttendees,
+                avgRating,
+                numberOfRatings
+        );
+    }
+
+    private int getImageResIdByCategory(String category) {
+        if (category.equals("Party")) {
+            return R.drawable.party1;
+        }
+
+        if (category.equals("Festival")) {
+            return R.drawable.festival1;
+        }
+
+        if (category.equals("Concert")) {
+            return R.drawable.concert1;
+        }
+
+        if (category.equals("Stand-Up & Theater")) {
+            return R.drawable.theater1;
+        }
+
+        if (category.equals("Exhibition")) {
+            return R.drawable.exhibition1;
+        }
+
+        return R.drawable.exit;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
 
         if (adapter != null && databaseHelper != null) {
 
-            adapter.setEvents(
-                    databaseHelper.getAllEvents()
-            );
+            loadEventsFromServer();
 
             setActiveButton(btnAll);
         }

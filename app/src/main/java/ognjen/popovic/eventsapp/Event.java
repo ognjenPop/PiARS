@@ -7,6 +7,8 @@ import java.util.Locale;
 
 public class Event {
 
+    private String serverEventId;
+
     private String name;
     private String description;
     private String location;
@@ -21,10 +23,12 @@ public class Event {
     private double averageRating;
     private int ratingCount;
 
-    //Konstruktor za promoted eventove
+    // Konstruktor za promoted eventove
     public Event(String name, String description, String location,
                  String dateTime, String category, int imageResId,
                  boolean isPromoted, int capacity, int attendingCount) {
+
+        this.serverEventId = "";
 
         this.name = name;
         this.description = description;
@@ -38,9 +42,12 @@ public class Event {
         this.averageRating = 0;
         this.ratingCount = 0;
     }
-    //Konstruktor za regular eventove
+
+    // Konstruktor za regular eventove
     public Event(String name, String description, String location,
                  String dateTime, String category, int imageResId) {
+
+        this.serverEventId = "";
 
         this.name = name;
         this.description = description;
@@ -53,6 +60,27 @@ public class Event {
         this.attendingCount = 0;
         this.averageRating = 0;
         this.ratingCount = 0;
+    }
+
+    // Konstruktor za eventove koji dolaze sa servera ili iz baze
+    public Event(String serverEventId, String name, String description, String location,
+                 String dateTime, String category, int imageResId,
+                 boolean isPromoted, int capacity, int attendingCount,
+                 double averageRating, int ratingCount) {
+
+        this.serverEventId = serverEventId;
+
+        this.name = name;
+        this.description = description;
+        this.location = location;
+        this.dateTime = dateTime;
+        this.category = category;
+        this.imageResId = imageResId;
+        this.isPromoted = isPromoted;
+        this.capacity = capacity;
+        this.attendingCount = attendingCount;
+        this.averageRating = averageRating;
+        this.ratingCount = ratingCount;
     }
 
     public boolean isPast() {
@@ -76,6 +104,14 @@ public class Event {
         total += rating;
         ratingCount++;
         averageRating = total / ratingCount;
+    }
+
+    public String getServerEventId() {
+        return serverEventId;
+    }
+
+    public void setServerEventId(String serverEventId) {
+        this.serverEventId = serverEventId;
     }
 
     public String getName() {

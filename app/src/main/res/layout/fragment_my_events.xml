@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:background="@color/light_gray">
 
-    <!-- Prvi red: dva dugmeta -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -16,19 +15,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/interested_events_upper"/>
-
+            android:text="@string/interested_events_upper" />
 
         <Button
             android:id="@+id/btnAttendingEvents"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="@string/attending_events_upper"/>
+            android:text="@string/attending_events_upper" />
+
     </LinearLayout>
 
+    <Button
+        android:id="@+id/btnFriendsActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/friends_activity_upper" />
 
-    <!-- Drugi red: jedno dugme -->
     <Button
         android:id="@+id/btnMyProfile"
         android:layout_width="match_parent"

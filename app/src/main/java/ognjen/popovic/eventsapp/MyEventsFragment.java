@@ -12,6 +12,7 @@ public class MyEventsFragment extends Fragment {
 
     Button btnInterestedEvents;
     Button btnAttendingEvents;
+    Button btnFriendsActivity;
     Button btnMyProfile;
 
     private String username;
@@ -36,6 +37,7 @@ public class MyEventsFragment extends Fragment {
 
         btnInterestedEvents = view.findViewById(R.id.btnInterestedEvents);
         btnAttendingEvents = view.findViewById(R.id.btnAttendingEvents);
+        btnFriendsActivity = view.findViewById(R.id.btnFriendsActivity);
         btnMyProfile = view.findViewById(R.id.btnMyProfile);
 
         btnInterestedEvents.setOnClickListener(new View.OnClickListener() {
@@ -76,6 +78,25 @@ public class MyEventsFragment extends Fragment {
                         "username",
                         username
                 );
+
+                intent.putExtra(
+                        "serverUserId",
+                        serverUserId
+                );
+
+                startActivity(intent);
+            }
+        });
+
+        btnFriendsActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent =
+                        new Intent(
+                                getActivity(),
+                                FriendsActivity.class
+                        );
 
                 intent.putExtra(
                         "serverUserId",

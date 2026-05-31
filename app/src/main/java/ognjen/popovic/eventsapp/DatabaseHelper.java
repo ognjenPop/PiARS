@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "EventsApp.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     public static final String TABLE_USERS = "users";
 
@@ -24,6 +24,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_EVENTS = "events";
 
     public static final String COLUMN_EVENT_ID = "id";
+    public static final String COLUMN_EVENT_SERVER_ID = "serverEventId";
     public static final String COLUMN_EVENT_NAME = "naziv";
     public static final String COLUMN_EVENT_DESCRIPTION = "opis";
     public static final String COLUMN_EVENT_LOCATION = "lokacija";
@@ -63,6 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_EVENTS =
             "CREATE TABLE " + TABLE_EVENTS + " (" +
                     COLUMN_EVENT_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_EVENT_SERVER_ID + " TEXT, " +
                     COLUMN_EVENT_NAME + " TEXT NOT NULL, " +
                     COLUMN_EVENT_DESCRIPTION + " TEXT, " +
                     COLUMN_EVENT_LOCATION + " TEXT NOT NULL, " +
@@ -275,7 +277,55 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public boolean insertEvent(Event event) {
         SQLiteDatabase db = this.getWritableDatabase();
 
+        ContentValues values = createEventContentValues(event);
+
+        long result = db.insert(TABLE_EVENTS, null, values);
+
+        return result != -1;
+    }
+
+    public boolean insertOrUpdateServerEvent(Event event) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        if (event.getServerEventId() == null || event.getServerEventId().isEmpty()) {
+            return insertEvent(event);
+        }
+
+        Cursor cursor = db.query(
+                TABLE_EVENTS,
+                new String[]{COLUMN_EVENT_ID},
+                COLUMN_EVENT_SERVER_ID + " = ?",
+                new String[]{event.getServerEventId()},
+                null,
+                null,
+                null
+        );
+
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+
+        ContentValues values = createEventContentValues(event);
+
+        if (exists) {
+            int result = db.update(
+                    TABLE_EVENTS,
+                    values,
+                    COLUMN_EVENT_SERVER_ID + " = ?",
+                    new String[]{event.getServerEventId()}
+            );
+
+            return result > 0;
+        } else {
+            long result = db.insert(TABLE_EVENTS, null, values);
+
+            return result != -1;
+        }
+    }
+
+    private ContentValues createEventContentValues(Event event) {
         ContentValues values = new ContentValues();
+
+        values.put(COLUMN_EVENT_SERVER_ID, event.getServerEventId());
         values.put(COLUMN_EVENT_NAME, event.getName());
         values.put(COLUMN_EVENT_DESCRIPTION, event.getDescription());
         values.put(COLUMN_EVENT_LOCATION, event.getLocation());
@@ -287,9 +337,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_EVENT_AVERAGE_RATING, event.getAverageRating());
         values.put(COLUMN_EVENT_RATING_COUNT, event.getRatingCount());
 
-        long result = db.insert(TABLE_EVENTS, null, values);
-
-        return result != -1;
+        return values;
     }
 
     public ArrayList<Event> getAllEvents() {
@@ -747,6 +795,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     private Event createEventFromCursor(Cursor cursor) {
+        String serverEventId = cursor.getString(
+                cursor.getColumnIndexOrThrow(COLUMN_EVENT_SERVER_ID)
+        );
+
         String name = cursor.getString(
                 cursor.getColumnIndexOrThrow(COLUMN_EVENT_NAME)
         );
@@ -791,35 +843,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         int imageResId = getImageResIdByCategory(category);
 
-        Event event;
-
-        if (isPromoted) {
-            event = new Event(
-                    name,
-                    description,
-                    location,
-                    dateTime,
-                    category,
-                    imageResId,
-                    true,
-                    capacity,
-                    attendingCount
-            );
-        } else {
-            event = new Event(
-                    name,
-                    description,
-                    location,
-                    dateTime,
-                    category,
-                    imageResId
-            );
-        }
-
-        event.setAverageRating(averageRating);
-        event.setRatingCount(ratingCount);
-
-        return event;
+        return new Event(
+                serverEventId,
+                name,
+                description,
+                location,
+                dateTime,
+                category,
+                imageResId,
+                isPromoted,
+                capacity,
+                attendingCount,
+                averageRating,
+                ratingCount
+        );
     }
 
     private int getImageResIdByCategory(String category) {
@@ -906,6 +943,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                                     int ratingCount) {
 
         ContentValues values = new ContentValues();
+        values.put(COLUMN_EVENT_SERVER_ID, "");
         values.put(COLUMN_EVENT_NAME, name);
         values.put(COLUMN_EVENT_DESCRIPTION, description);
         values.put(COLUMN_EVENT_LOCATION, location);

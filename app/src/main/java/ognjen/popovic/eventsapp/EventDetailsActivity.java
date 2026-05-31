@@ -8,6 +8,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class EventDetailsActivity extends AppCompatActivity {
 
     private ImageView imgDetailsEvent;
@@ -24,10 +27,14 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button btnDetailsAttending;
 
     private DatabaseHelper databaseHelper;
+    private ServerHelper serverHelper;
 
     private String username;
     private String serverUserId;
+    private String serverEventId;
     private String eventName;
+
+    private Event currentEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event_details);
 
         databaseHelper = new DatabaseHelper(this);
+        serverHelper = new ServerHelper(this);
 
         imgDetailsEvent = findViewById(R.id.imgDetailsEvent);
 
@@ -52,98 +60,167 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventName = getIntent().getStringExtra("eventName");
         username = getIntent().getStringExtra("username");
         serverUserId = getIntent().getStringExtra("serverUserId");
+        serverEventId = getIntent().getStringExtra("serverEventId");
 
-        Event event = databaseHelper.findEventByName(eventName);
+        currentEvent = databaseHelper.findEventByName(eventName);
 
-        if (event != null) {
+        if (currentEvent != null) {
 
-            imgDetailsEvent.setImageResource(event.getImageResId());
-
-            tvDetailsName.setText(event.getName());
-            tvDetailsCategory.setText(event.getCategory());
-            tvDetailsLocation.setText(event.getLocation());
-            tvDetailsDateTime.setText(event.getDateTime());
-            tvDetailsDescription.setText(event.getDescription());
-
-            if (event.isPromoted()) {
-
-                int freePlaces =
-                        event.getCapacity() - event.getAttendingCount();
-
-                tvDetailsFreePlaces.setVisibility(View.VISIBLE);
-
-                tvDetailsFreePlaces.setText(
-                        getString(
-                                R.string.free_places_format,
-                                freePlaces,
-                                event.getCapacity()
-                        )
-                );
-
-            } else {
-
-                tvDetailsFreePlaces.setVisibility(View.GONE);
+            if (serverEventId == null || serverEventId.isEmpty()) {
+                serverEventId = currentEvent.getServerEventId();
             }
 
-            if (event.getRatingCount() == 0) {
-
-                tvDetailsRating.setText(R.string.no_ratings);
-
-            } else {
-
-                tvDetailsRating.setText(
-                        getString(
-                                R.string.average_rating_format,
-                                event.getAverageRating(),
-                                event.getRatingCount()
-                        )
-                );
-            }
+            showEventData(currentEvent);
         }
 
-        btnDetailsInterested.setOnClickListener(v -> {
+        btnDetailsInterested.setOnClickListener(v ->
+                sendAttendanceToServer(DatabaseHelper.STATUS_INTERESTED)
+        );
 
-            boolean success =
-                    databaseHelper.addInterested(username, eventName);
+        btnDetailsAttending.setOnClickListener(v ->
+                sendAttendanceToServer(DatabaseHelper.STATUS_ATTENDING)
+        );
+    }
 
-            if (success) {
+    private void showEventData(Event event) {
 
-                Toast.makeText(
-                        EventDetailsActivity.this,
-                        R.string.added_to_interested,
-                        Toast.LENGTH_SHORT
-                ).show();
+        imgDetailsEvent.setImageResource(event.getImageResId());
 
-            } else {
+        tvDetailsName.setText(event.getName());
+        tvDetailsCategory.setText(event.getCategory());
+        tvDetailsLocation.setText(event.getLocation());
+        tvDetailsDateTime.setText(event.getDateTime());
+        tvDetailsDescription.setText(event.getDescription());
 
-                Toast.makeText(
-                        EventDetailsActivity.this,
-                        R.string.already_added_or_error,
-                        Toast.LENGTH_SHORT
-                ).show();
+        if (event.isPromoted()) {
+
+            int freePlaces =
+                    event.getCapacity() - event.getAttendingCount();
+
+            tvDetailsFreePlaces.setVisibility(View.VISIBLE);
+
+            tvDetailsFreePlaces.setText(
+                    getString(
+                            R.string.free_places_format,
+                            freePlaces,
+                            event.getCapacity()
+                    )
+            );
+
+        } else {
+
+            tvDetailsFreePlaces.setVisibility(View.GONE);
+        }
+
+        if (event.getRatingCount() == 0) {
+
+            tvDetailsRating.setText(R.string.no_ratings);
+
+        } else {
+
+            tvDetailsRating.setText(
+                    getString(
+                            R.string.average_rating_format,
+                            event.getAverageRating(),
+                            event.getRatingCount()
+                    )
+            );
+        }
+    }
+
+    private void sendAttendanceToServer(String commitment) {
+
+        if (serverUserId == null || serverUserId.isEmpty()
+                || serverEventId == null || serverEventId.isEmpty()) {
+
+            Toast.makeText(
+                    EventDetailsActivity.this,
+                    "Nedostaje server ID korisnika ili dogadjaja",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        JSONObject requestBody =
+                new JSONObject();
+
+        try {
+            requestBody.put("userId", serverUserId);
+            requestBody.put("eventId", serverEventId);
+            requestBody.put("commitment", commitment);
+
+        } catch (JSONException e) {
+
+            Toast.makeText(
+                    EventDetailsActivity.this,
+                    "Greska prilikom pripreme podataka",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        serverHelper.postRequest("/attendance", requestBody, new ServerHelper.ServerResponseListener() {
+            @Override
+            public void onSuccess(JSONObject response) {
+
+                boolean localSuccess;
+
+                if (DatabaseHelper.STATUS_INTERESTED.equals(commitment)) {
+
+                    localSuccess =
+                            databaseHelper.addInterested(username, eventName);
+
+                    if (localSuccess) {
+
+                        Toast.makeText(
+                                EventDetailsActivity.this,
+                                R.string.added_to_interested,
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                    } else {
+
+                        Toast.makeText(
+                                EventDetailsActivity.this,
+                                R.string.already_added_or_error,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+
+                } else {
+
+                    localSuccess =
+                            databaseHelper.addAttending(username, eventName);
+
+                    if (localSuccess) {
+
+                        Toast.makeText(
+                                EventDetailsActivity.this,
+                                R.string.added_to_attending,
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        refreshEventData();
+
+                    } else {
+
+                        Toast.makeText(
+                                EventDetailsActivity.this,
+                                R.string.attending_error,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                }
             }
-        });
 
-        btnDetailsAttending.setOnClickListener(v -> {
-
-            boolean success =
-                    databaseHelper.addAttending(username, eventName);
-
-            if (success) {
+            @Override
+            public void onError(String error) {
 
                 Toast.makeText(
                         EventDetailsActivity.this,
-                        R.string.added_to_attending,
-                        Toast.LENGTH_SHORT
-                ).show();
-
-                refreshEventData();
-
-            } else {
-
-                Toast.makeText(
-                        EventDetailsActivity.this,
-                        R.string.attending_error,
+                        "Server nije dostupan ili nema slobodnih mesta",
                         Toast.LENGTH_SHORT
                 ).show();
             }
@@ -158,6 +235,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (event == null) {
             return;
         }
+
+        currentEvent = event;
 
         if (event.isPromoted()) {
 

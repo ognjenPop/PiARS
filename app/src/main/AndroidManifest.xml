@@ -14,51 +14,46 @@
         android:theme="@style/Theme.EventsApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
+        <activity
+            android:name=".FriendsActivity"
+            android:exported="false" />
         <activity
             android:name=".RatingActivity"
             android:exported="false" />
-
         <activity
             android:name=".EventDetailsActivity"
             android:exported="false" />
-
         <activity
             android:name=".CreateEventActivity"
             android:exported="false" />
-
         <activity
             android:name=".PasswordActivity"
             android:exported="false" />
-
         <activity
             android:name=".ProfileActivity"
             android:exported="false" />
-
         <activity
             android:name=".AttendingEventsActivity"
             android:exported="false" />
-
         <activity
             android:name=".InterestedEventsActivity"
             android:exported="false" />
-
         <activity
             android:name=".EventsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".FriendsActivity"
             android:exported="false" />
 
         <activity
             android:name=".MainActivity"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
-
     </application>
 
 </manifest>

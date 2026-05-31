@@ -7,6 +7,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class RatingActivity extends AppCompatActivity {
 
     private TextView tvRatingEventName;
@@ -22,9 +25,14 @@ public class RatingActivity extends AppCompatActivity {
     private int selectedRating = 0;
 
     private DatabaseHelper databaseHelper;
+    private ServerHelper serverHelper;
 
     private String username;
+    private String serverUserId;
+    private String serverEventId;
     private String eventName;
+
+    private Event currentEvent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +41,9 @@ public class RatingActivity extends AppCompatActivity {
 
         databaseHelper =
                 new DatabaseHelper(this);
+
+        serverHelper =
+                new ServerHelper(this);
 
         tvRatingEventName =
                 findViewById(R.id.tvRatingEventName);
@@ -61,6 +72,21 @@ public class RatingActivity extends AppCompatActivity {
         username =
                 getIntent().getStringExtra("username");
 
+        serverUserId =
+                getIntent().getStringExtra("serverUserId");
+
+        serverEventId =
+                getIntent().getStringExtra("serverEventId");
+
+        currentEvent =
+                databaseHelper.findEventByName(eventName);
+
+        if (currentEvent != null) {
+            if (serverEventId == null || serverEventId.isEmpty()) {
+                serverEventId = currentEvent.getServerEventId();
+            }
+        }
+
         tvRatingEventName.setText(eventName);
 
         btnStar1.setOnClickListener(v ->
@@ -83,37 +109,93 @@ public class RatingActivity extends AppCompatActivity {
                 selectRating(5)
         );
 
-        btnConfirmRating.setOnClickListener(v -> {
+        btnConfirmRating.setOnClickListener(v ->
+                sendRatingToServer()
+        );
 
-            if (selectedRating == 0) {
+        updateStars();
+    }
 
-                Toast.makeText(
-                        RatingActivity.this,
-                        R.string.select_rating_error,
-                        Toast.LENGTH_SHORT
-                ).show();
+    private void sendRatingToServer() {
 
-                return;
-            }
+        if (selectedRating == 0) {
 
-            boolean success =
+            Toast.makeText(
+                    RatingActivity.this,
+                    R.string.select_rating_error,
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        if (serverUserId == null || serverUserId.isEmpty()
+                || serverEventId == null || serverEventId.isEmpty()) {
+
+            Toast.makeText(
+                    RatingActivity.this,
+                    "Nedostaje server ID korisnika ili dogadjaja",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        JSONObject requestBody =
+                new JSONObject();
+
+        try {
+            requestBody.put("userId", serverUserId);
+            requestBody.put("eventId", serverEventId);
+            requestBody.put("rating", selectedRating);
+
+        } catch (JSONException e) {
+
+            Toast.makeText(
+                    RatingActivity.this,
+                    "Greska prilikom pripreme podataka",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        serverHelper.postRequest("/ratings", requestBody, new ServerHelper.ServerResponseListener() {
+            @Override
+            public void onSuccess(JSONObject response) {
+
+                try {
                     databaseHelper.addRating(
                             username,
                             eventName,
                             selectedRating
                     );
 
-            if (success) {
+                    Event updatedEvent =
+                            createEventFromJson(response);
 
-                Toast.makeText(
-                        RatingActivity.this,
-                        R.string.rating_saved,
-                        Toast.LENGTH_SHORT
-                ).show();
+                    databaseHelper.insertOrUpdateServerEvent(updatedEvent);
 
-                finish();
+                    Toast.makeText(
+                            RatingActivity.this,
+                            R.string.rating_saved,
+                            Toast.LENGTH_SHORT
+                    ).show();
 
-            } else {
+                    finish();
+
+                } catch (JSONException e) {
+
+                    Toast.makeText(
+                            RatingActivity.this,
+                            "Greska u odgovoru servera",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
 
                 Toast.makeText(
                         RatingActivity.this,
@@ -122,8 +204,84 @@ public class RatingActivity extends AppCompatActivity {
                 ).show();
             }
         });
+    }
 
-        updateStars();
+    private Event createEventFromJson(JSONObject eventObject) throws JSONException {
+
+        String serverEventId =
+                eventObject.getString("_id");
+
+        String name =
+                eventObject.getString("name");
+
+        String description =
+                eventObject.optString("description", "");
+
+        String location =
+                eventObject.getString("location");
+
+        String eventTime =
+                eventObject.getString("eventTime");
+
+        String category =
+                eventObject.getString("category");
+
+        boolean promoted =
+                eventObject.optBoolean("promoted", false);
+
+        int capacity =
+                eventObject.optInt("capacity", 0);
+
+        int numberOfAttendees =
+                eventObject.optInt("numberOfAttendees", 0);
+
+        double avgRating =
+                eventObject.optDouble("avgRating", 0);
+
+        int numberOfRatings =
+                eventObject.optInt("numberOfRatings", 0);
+
+        int imageResId =
+                getImageResIdByCategory(category);
+
+        return new Event(
+                serverEventId,
+                name,
+                description,
+                location,
+                eventTime,
+                category,
+                imageResId,
+                promoted,
+                capacity,
+                numberOfAttendees,
+                avgRating,
+                numberOfRatings
+        );
+    }
+
+    private int getImageResIdByCategory(String category) {
+        if (category.equals("Party")) {
+            return R.drawable.party1;
+        }
+
+        if (category.equals("Festival")) {
+            return R.drawable.festival1;
+        }
+
+        if (category.equals("Concert")) {
+            return R.drawable.concert1;
+        }
+
+        if (category.equals("Stand-Up & Theater")) {
+            return R.drawable.theater1;
+        }
+
+        if (category.equals("Exhibition")) {
+            return R.drawable.exhibition1;
+        }
+
+        return R.drawable.exit;
     }
 
     private void selectRating(int rating) {

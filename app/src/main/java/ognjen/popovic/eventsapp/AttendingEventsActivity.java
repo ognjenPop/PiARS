@@ -124,6 +124,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
             );
 
             intent.putExtra(
+                    "serverEventId",
+                    event.getServerEventId()
+            );
+
+            intent.putExtra(
                     "username",
                     username
             );
@@ -179,6 +184,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
             );
 
             intent.putExtra(
+                    "serverEventId",
+                    event.getServerEventId()
+            );
+
+            intent.putExtra(
                     "username",
                     username
             );
@@ -216,6 +226,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
             intent.putExtra(
                     "eventName",
                     event.getName()
+            );
+
+            intent.putExtra(
+                    "serverEventId",
+                    event.getServerEventId()
             );
 
             intent.putExtra(

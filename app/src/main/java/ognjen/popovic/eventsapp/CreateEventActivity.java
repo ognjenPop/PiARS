@@ -10,6 +10,9 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
 public class CreateEventActivity extends AppCompatActivity {
@@ -25,6 +28,9 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button btnCreateEvent;
 
     private DatabaseHelper databaseHelper;
+    private ServerHelper serverHelper;
+
+    private String serverUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +38,10 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
 
         databaseHelper = new DatabaseHelper(this);
+        serverHelper = new ServerHelper(this);
+
+        serverUserId =
+                getIntent().getStringExtra("serverUserId");
 
         etCreateName =
                 findViewById(R.id.etCreateName);
@@ -70,7 +80,7 @@ public class CreateEventActivity extends AppCompatActivity {
                 });
 
         btnCreateEvent.setOnClickListener(v ->
-                createEvent()
+                createEventOnServer()
         );
     }
 
@@ -92,7 +102,7 @@ public class CreateEventActivity extends AppCompatActivity {
         spinnerCreateCategory.setAdapter(adapter);
     }
 
-    private void createEvent() {
+    private void createEventOnServer() {
 
         String name =
                 etCreateName.getText()
@@ -143,16 +153,18 @@ public class CreateEventActivity extends AppCompatActivity {
             return;
         }
 
-        Event newEvent;
+        boolean promoted =
+                cbPromoted.isChecked();
 
-        if (cbPromoted.isChecked()) {
+        int capacity =
+                0;
+
+        if (promoted) {
 
             String capacityText =
                     etCreateCapacity.getText()
                             .toString()
                             .trim();
-
-            int capacity;
 
             try {
 
@@ -180,51 +192,158 @@ public class CreateEventActivity extends AppCompatActivity {
 
                 return;
             }
-
-            newEvent =
-                    EventFactory.createPromotedEvent(
-                            name,
-                            description,
-                            location,
-                            dateTime,
-                            category,
-                            R.drawable.exit,
-                            capacity
-                    );
-
-        } else {
-
-            newEvent =
-                    EventFactory.createRegularEvent(
-                            name,
-                            description,
-                            location,
-                            dateTime,
-                            category,
-                            R.drawable.exit
-                    );
         }
 
-        boolean insertSuccessful =
-                databaseHelper.insertEvent(newEvent);
+        JSONObject requestBody =
+                new JSONObject();
 
-        if (insertSuccessful) {
+        try {
+            requestBody.put("name", name);
+            requestBody.put("description", description);
+            requestBody.put("location", location);
+            requestBody.put("eventTime", dateTime);
+            requestBody.put("category", category);
+            requestBody.put("promoted", promoted);
+            requestBody.put("capacity", capacity);
+
+        } catch (JSONException e) {
 
             Toast.makeText(
                     this,
-                    R.string.event_created,
+                    "Greska prilikom pripreme podataka",
                     Toast.LENGTH_SHORT
             ).show();
 
-            finish();
-
-        } else {
-
-            Toast.makeText(
-                    this,
-                    R.string.event_create_error,
-                    Toast.LENGTH_SHORT
-            ).show();
+            return;
         }
+
+        serverHelper.postRequest("/events", requestBody, new ServerHelper.ServerResponseListener() {
+            @Override
+            public void onSuccess(JSONObject response) {
+
+                try {
+                    Event event =
+                            createEventFromJson(response);
+
+                    boolean insertSuccessful =
+                            databaseHelper.insertOrUpdateServerEvent(event);
+
+                    if (insertSuccessful) {
+
+                        Toast.makeText(
+                                CreateEventActivity.this,
+                                R.string.event_created,
+                                Toast.LENGTH_SHORT
+                        ).show();
+
+                        finish();
+
+                    } else {
+
+                        Toast.makeText(
+                                CreateEventActivity.this,
+                                R.string.event_create_error,
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+
+                } catch (JSONException e) {
+
+                    Toast.makeText(
+                            CreateEventActivity.this,
+                            "Greska u odgovoru servera",
+                            Toast.LENGTH_SHORT
+                    ).show();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+
+                Toast.makeText(
+                        CreateEventActivity.this,
+                        "Server nije dostupan ili dogadjaj nije sacuvan",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
+
+    private Event createEventFromJson(JSONObject eventObject) throws JSONException {
+
+        String serverEventId =
+                eventObject.getString("_id");
+
+        String name =
+                eventObject.getString("name");
+
+        String description =
+                eventObject.optString("description", "");
+
+        String location =
+                eventObject.getString("location");
+
+        String eventTime =
+                eventObject.getString("eventTime");
+
+        String category =
+                eventObject.getString("category");
+
+        boolean promoted =
+                eventObject.optBoolean("promoted", false);
+
+        int capacity =
+                eventObject.optInt("capacity", 0);
+
+        int numberOfAttendees =
+                eventObject.optInt("numberOfAttendees", 0);
+
+        double avgRating =
+                eventObject.optDouble("avgRating", 0);
+
+        int numberOfRatings =
+                eventObject.optInt("numberOfRatings", 0);
+
+        int imageResId =
+                getImageResIdByCategory(category);
+
+        return new Event(
+                serverEventId,
+                name,
+                description,
+                location,
+                eventTime,
+                category,
+                imageResId,
+                promoted,
+                capacity,
+                numberOfAttendees,
+                avgRating,
+                numberOfRatings
+        );
+    }
+
+    private int getImageResIdByCategory(String category) {
+        if (category.equals("Party")) {
+            return R.drawable.party1;
+        }
+
+        if (category.equals("Festival")) {
+            return R.drawable.festival1;
+        }
+
+        if (category.equals("Concert")) {
+            return R.drawable.concert1;
+        }
+
+        if (category.equals("Stand-Up & Theater")) {
+            return R.drawable.theater1;
+        }
+
+        if (category.equals("Exhibition")) {
+            return R.drawable.exhibition1;
+        }
+
+        return R.drawable.exit;
     }
 }
