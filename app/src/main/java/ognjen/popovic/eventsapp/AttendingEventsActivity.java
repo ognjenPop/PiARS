@@ -22,6 +22,7 @@ public class AttendingEventsActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
 
     private String username;
+    private String serverUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,9 @@ public class AttendingEventsActivity extends AppCompatActivity {
 
         username =
                 getIntent().getStringExtra("username");
+
+        serverUserId =
+                getIntent().getStringExtra("serverUserId");
 
         tvNoAttendingEvents =
                 findViewById(R.id.tvNoAttendingEvents);
@@ -124,6 +128,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
                     username
             );
 
+            intent.putExtra(
+                    "serverUserId",
+                    serverUserId
+            );
+
             startActivity(intent);
         });
 
@@ -174,6 +183,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
                     username
             );
 
+            intent.putExtra(
+                    "serverUserId",
+                    serverUserId
+            );
+
             startActivity(intent);
         });
 
@@ -207,6 +221,11 @@ public class AttendingEventsActivity extends AppCompatActivity {
             intent.putExtra(
                     "username",
                     username
+            );
+
+            intent.putExtra(
+                    "serverUserId",
+                    serverUserId
             );
 
             startActivity(intent);

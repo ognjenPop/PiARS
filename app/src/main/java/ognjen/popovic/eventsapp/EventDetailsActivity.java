@@ -26,6 +26,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
 
     private String username;
+    private String serverUserId;
     private String eventName;
 
     @Override
@@ -50,6 +51,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         eventName = getIntent().getStringExtra("eventName");
         username = getIntent().getStringExtra("username");
+        serverUserId = getIntent().getStringExtra("serverUserId");
 
         Event event = databaseHelper.findEventByName(eventName);
 

@@ -26,6 +26,7 @@ public class EventsFragment extends Fragment {
     private DatabaseHelper databaseHelper;
 
     private String username;
+    private String serverUserId;
 
     public EventsFragment() {
 
@@ -45,6 +46,7 @@ public class EventsFragment extends Fragment {
 
         if (getArguments() != null) {
             username = getArguments().getString("username");
+            serverUserId = getArguments().getString("serverUserId");
         }
 
         databaseHelper =
@@ -155,6 +157,11 @@ public class EventsFragment extends Fragment {
                             CreateEventActivity.class
                     );
 
+            intent.putExtra(
+                    "serverUserId",
+                    serverUserId
+            );
+
             startActivity(intent);
         });
 
@@ -178,6 +185,11 @@ public class EventsFragment extends Fragment {
                     intent.putExtra(
                             "username",
                             username
+                    );
+
+                    intent.putExtra(
+                            "serverUserId",
+                            serverUserId
                     );
 
                     startActivity(intent);

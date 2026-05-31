@@ -14,6 +14,10 @@ public class ProfileActivity extends AppCompatActivity {
     Button btnPassword;
     Button btnEndSession;
 
+    private String username;
+    private String email;
+    private String serverUserId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,8 +29,9 @@ public class ProfileActivity extends AppCompatActivity {
         btnPassword = findViewById(R.id.btnPassword);
         btnEndSession = findViewById(R.id.btnEndSession);
 
-        String username = getIntent().getStringExtra("username");
-        String email = getIntent().getStringExtra("email");
+        username = getIntent().getStringExtra("username");
+        email = getIntent().getStringExtra("email");
+        serverUserId = getIntent().getStringExtra("serverUserId");
 
         tvProfileUsername.setText(username);
         tvProfileEmail.setText(email);
@@ -39,7 +44,10 @@ public class ProfileActivity extends AppCompatActivity {
 
         btnPassword.setOnClickListener(view -> {
             Intent intent = new Intent(ProfileActivity.this, PasswordActivity.class);
-            intent.putExtra("username", tvProfileUsername.getText().toString());
+
+            intent.putExtra("username", username);
+            intent.putExtra("serverUserId", serverUserId);
+
             startActivity(intent);
         });
     }

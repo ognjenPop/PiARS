@@ -18,6 +18,7 @@ public class InterestedEventsActivity extends AppCompatActivity {
     private DatabaseHelper databaseHelper;
 
     private String username;
+    private String serverUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +28,7 @@ public class InterestedEventsActivity extends AppCompatActivity {
         databaseHelper = new DatabaseHelper(this);
 
         username = getIntent().getStringExtra("username");
+        serverUserId = getIntent().getStringExtra("serverUserId");
 
         tvNoInterestedEvents =
                 findViewById(R.id.tvNoInterestedEvents);
@@ -75,6 +77,11 @@ public class InterestedEventsActivity extends AppCompatActivity {
                     intent.putExtra(
                             "username",
                             username
+                    );
+
+                    intent.putExtra(
+                            "serverUserId",
+                            serverUserId
                     );
 
                     startActivity(intent);

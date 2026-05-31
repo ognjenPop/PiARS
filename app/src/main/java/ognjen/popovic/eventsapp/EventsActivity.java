@@ -14,6 +14,7 @@ public class EventsActivity extends AppCompatActivity {
 
     private String username;
     private String email;
+    private String serverUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class EventsActivity extends AppCompatActivity {
         if (bundle != null) {
             username = bundle.getString("username");
             email = bundle.getString("email");
+            serverUserId = bundle.getString("serverUserId");
 
             tvUsername.setText(username);
         }
@@ -56,6 +58,11 @@ public class EventsActivity extends AppCompatActivity {
                 username
         );
 
+        bundle.putString(
+                "serverUserId",
+                serverUserId
+        );
+
         fragment.setArguments(bundle);
 
         loadFragment(fragment);
@@ -76,6 +83,11 @@ public class EventsActivity extends AppCompatActivity {
         bundle.putString(
                 "email",
                 email
+        );
+
+        bundle.putString(
+                "serverUserId",
+                serverUserId
         );
 
         fragment.setArguments(bundle);

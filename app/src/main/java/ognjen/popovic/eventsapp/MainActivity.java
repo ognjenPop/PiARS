@@ -10,6 +10,9 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     LinearLayout startLayout;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     EditText etRegisterPassword;
 
     DatabaseHelper databaseHelper;
+    ServerHelper serverHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         databaseHelper = new DatabaseHelper(this);
+        serverHelper = new ServerHelper(this);
 
         startLayout = findViewById(R.id.startLayout);
         loginLayout = findViewById(R.id.loginLayout);
@@ -73,105 +78,173 @@ public class MainActivity extends AppCompatActivity {
         btnDoLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = etLoginUsername.getText().toString();
-                String password = etLoginPassword.getText().toString();
-
-                if (username.isEmpty() || password.isEmpty()) {
-                    Toast.makeText(
-                            MainActivity.this,
-                            "Unesite username i password",
-                            Toast.LENGTH_SHORT
-                    ).show();
-
-                    return;
-                }
-
-                boolean loginSuccessful = databaseHelper.loginUser(username, password);
-
-                if (loginSuccessful) {
-                    Intent intent = new Intent(MainActivity.this, EventsActivity.class);
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("username", username);
-                    bundle.putString("email", "");
-
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                } else {
-                    Toast.makeText(
-                            MainActivity.this,
-                            "Pogresan username ili password",
-                            Toast.LENGTH_SHORT
-                    ).show();
-                }
+                loginUserOnServer();
             }
         });
 
         btnDoRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String username = etRegisterUsername.getText().toString();
-                String email = etRegisterEmail.getText().toString();
-                String password = etRegisterPassword.getText().toString();
+                registerUserOnServer();
+            }
+        });
+    }
 
-                if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+    private void loginUserOnServer() {
+        String username = etLoginUsername.getText().toString();
+        String password = etLoginPassword.getText().toString();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(
+                    MainActivity.this,
+                    "Unesite username i password",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        JSONObject requestBody = new JSONObject();
+
+        try {
+            requestBody.put("username", username);
+            requestBody.put("password", password);
+        } catch (JSONException e) {
+            Toast.makeText(
+                    MainActivity.this,
+                    "Greska prilikom pripreme podataka",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        serverHelper.postRequest("/login", requestBody, new ServerHelper.ServerResponseListener() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String serverUserId = response.getString("_id");
+                    String username = response.getString("username");
+                    String email = response.getString("email");
+
+                    if (!databaseHelper.checkUsernameExists(username)) {
+                        databaseHelper.insertUser(
+                                username,
+                                email,
+                                etLoginPassword.getText().toString()
+                        );
+                    }
+
+                    openEventsActivity(username, email, serverUserId);
+
+                } catch (JSONException e) {
                     Toast.makeText(
                             MainActivity.this,
-                            "Popunite sva polja",
+                            "Greska u odgovoru servera",
                             Toast.LENGTH_SHORT
                     ).show();
-
-                    return;
                 }
+            }
 
-                if (databaseHelper.checkUsernameExists(username)) {
-                    Toast.makeText(
-                            MainActivity.this,
-                            "Username vec postoji",
-                            Toast.LENGTH_SHORT
-                    ).show();
+            @Override
+            public void onError(String error) {
+                Toast.makeText(
+                        MainActivity.this,
+                        "Pogresan username ili password",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
+        });
+    }
 
-                    return;
-                }
+    private void registerUserOnServer() {
+        String username = etRegisterUsername.getText().toString();
+        String email = etRegisterEmail.getText().toString();
+        String password = etRegisterPassword.getText().toString();
 
-                if (databaseHelper.checkEmailExists(email)) {
-                    Toast.makeText(
-                            MainActivity.this,
-                            "Email vec postoji",
-                            Toast.LENGTH_SHORT
-                    ).show();
+        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
+            Toast.makeText(
+                    MainActivity.this,
+                    "Popunite sva polja",
+                    Toast.LENGTH_SHORT
+            ).show();
 
-                    return;
-                }
+            return;
+        }
 
-                boolean insertSuccessful = databaseHelper.insertUser(username, email, password);
+        JSONObject requestBody = new JSONObject();
 
-                if (insertSuccessful) {
+        try {
+            requestBody.put("username", username);
+            requestBody.put("email", email);
+            requestBody.put("password", password);
+            requestBody.put("isAdmin", false);
+        } catch (JSONException e) {
+            Toast.makeText(
+                    MainActivity.this,
+                    "Greska prilikom pripreme podataka",
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        serverHelper.postRequest("/users", requestBody, new ServerHelper.ServerResponseListener() {
+            @Override
+            public void onSuccess(JSONObject response) {
+                try {
+                    String serverUserId = response.getString("_id");
+                    String username = response.getString("username");
+                    String email = response.getString("email");
+
+                    if (!databaseHelper.checkUsernameExists(username)
+                            && !databaseHelper.checkEmailExists(email)) {
+
+                        databaseHelper.insertUser(
+                                username,
+                                email,
+                                etRegisterPassword.getText().toString()
+                        );
+                    }
+
                     Toast.makeText(
                             MainActivity.this,
                             "Registracija uspesna",
                             Toast.LENGTH_SHORT
                     ).show();
 
-                    Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+                    openEventsActivity(username, email, serverUserId);
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("username", username);
-                    bundle.putString("email", email);
-
-                    intent.putExtras(bundle);
-                    startActivity(intent);
-
-                } else {
+                } catch (JSONException e) {
                     Toast.makeText(
                             MainActivity.this,
-                            "Greska prilikom registracije",
+                            "Greska u odgovoru servera",
                             Toast.LENGTH_SHORT
                     ).show();
                 }
             }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(
+                        MainActivity.this,
+                        "Korisnik vec postoji ili server nije dostupan",
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         });
+    }
+
+    private void openEventsActivity(String username, String email, String serverUserId) {
+        Intent intent = new Intent(MainActivity.this, EventsActivity.class);
+
+        Bundle bundle = new Bundle();
+        bundle.putString("username", username);
+        bundle.putString("email", email);
+        bundle.putString("serverUserId", serverUserId);
+
+        intent.putExtras(bundle);
+        startActivity(intent);
     }
 
     @Override

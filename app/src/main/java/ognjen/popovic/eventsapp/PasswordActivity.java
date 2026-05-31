@@ -6,6 +6,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class PasswordActivity extends AppCompatActivity {
 
     EditText etCurrentPassword;
@@ -14,8 +17,10 @@ public class PasswordActivity extends AppCompatActivity {
     Button btnSavePassword;
 
     DatabaseHelper databaseHelper;
+    ServerHelper serverHelper;
 
     String username;
+    String serverUserId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +28,7 @@ public class PasswordActivity extends AppCompatActivity {
         setContentView(R.layout.activity_password);
 
         databaseHelper = new DatabaseHelper(this);
+        serverHelper = new ServerHelper(this);
 
         etCurrentPassword = findViewById(R.id.etCurrentPassword);
         etNewPassword = findViewById(R.id.etNewPassword);
@@ -30,38 +36,53 @@ public class PasswordActivity extends AppCompatActivity {
         btnSavePassword = findViewById(R.id.btnSavePassword);
 
         username = getIntent().getStringExtra("username");
+        serverUserId = getIntent().getStringExtra("serverUserId");
 
         btnSavePassword.setOnClickListener(view -> {
-            String currentPassword = etCurrentPassword.getText().toString();
-            String newPassword = etNewPassword.getText().toString();
+            changePasswordOnServer();
+        });
+    }
 
-            if (currentPassword.isEmpty() || newPassword.isEmpty()) {
-                Toast.makeText(
-                        PasswordActivity.this,
-                        "Popunite sva polja",
-                        Toast.LENGTH_SHORT
-                ).show();
+    private void changePasswordOnServer() {
+        String currentPassword = etCurrentPassword.getText().toString();
+        String newPassword = etNewPassword.getText().toString();
 
-                return;
-            }
+        if (currentPassword.isEmpty() || newPassword.isEmpty()) {
+            Toast.makeText(
+                    PasswordActivity.this,
+                    "Popunite sva polja",
+                    Toast.LENGTH_SHORT
+            ).show();
 
-            boolean currentPasswordCorrect =
-                    databaseHelper.loginUser(username, currentPassword);
+            return;
+        }
 
-            if (!currentPasswordCorrect) {
-                Toast.makeText(
-                        PasswordActivity.this,
-                        "Trenutna sifra nije ispravna",
-                        Toast.LENGTH_SHORT
-                ).show();
+        JSONObject requestBody = new JSONObject();
 
-                return;
-            }
+        try {
+            requestBody.put("username", username);
+            requestBody.put("oldPassword", currentPassword);
+            requestBody.put("newPassword", newPassword);
 
-            boolean updateSuccessful =
-                    databaseHelper.updatePassword(username, newPassword);
+        } catch (JSONException e) {
+            Toast.makeText(
+                    PasswordActivity.this,
+                    "Greska prilikom pripreme podataka",
+                    Toast.LENGTH_SHORT
+            ).show();
 
-            if (updateSuccessful) {
+            return;
+        }
+
+        serverHelper.putRequest("/password", requestBody, new ServerHelper.ServerResponseListener() {
+            @Override
+            public void onSuccess(JSONObject response) {
+
+                databaseHelper.updatePassword(
+                        username,
+                        newPassword
+                );
+
                 Toast.makeText(
                         PasswordActivity.this,
                         "Uspesna promena sifre",
@@ -69,11 +90,13 @@ public class PasswordActivity extends AppCompatActivity {
                 ).show();
 
                 finish();
+            }
 
-            } else {
+            @Override
+            public void onError(String error) {
                 Toast.makeText(
                         PasswordActivity.this,
-                        "Greska prilikom promene sifre",
+                        "Trenutna sifra nije ispravna ili server nije dostupan",
                         Toast.LENGTH_SHORT
                 ).show();
             }

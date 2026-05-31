@@ -16,6 +16,7 @@ public class MyEventsFragment extends Fragment {
 
     private String username;
     private String email;
+    private String serverUserId;
 
     public MyEventsFragment() {
     }
@@ -30,6 +31,7 @@ public class MyEventsFragment extends Fragment {
         if (getArguments() != null) {
             username = getArguments().getString("username");
             email = getArguments().getString("email");
+            serverUserId = getArguments().getString("serverUserId");
         }
 
         btnInterestedEvents = view.findViewById(R.id.btnInterestedEvents);
@@ -51,6 +53,11 @@ public class MyEventsFragment extends Fragment {
                         username
                 );
 
+                intent.putExtra(
+                        "serverUserId",
+                        serverUserId
+                );
+
                 startActivity(intent);
             }
         });
@@ -68,6 +75,11 @@ public class MyEventsFragment extends Fragment {
                 intent.putExtra(
                         "username",
                         username
+                );
+
+                intent.putExtra(
+                        "serverUserId",
+                        serverUserId
                 );
 
                 startActivity(intent);
@@ -92,6 +104,11 @@ public class MyEventsFragment extends Fragment {
                 intent.putExtra(
                         "email",
                         email
+                );
+
+                intent.putExtra(
+                        "serverUserId",
+                        serverUserId
                 );
 
                 startActivity(intent);
