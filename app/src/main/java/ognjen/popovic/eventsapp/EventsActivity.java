@@ -15,6 +15,7 @@ public class EventsActivity extends AppCompatActivity {
     private String username;
     private String email;
     private String serverUserId;
+    private boolean isAdmin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +32,7 @@ public class EventsActivity extends AppCompatActivity {
             username = bundle.getString("username");
             email = bundle.getString("email");
             serverUserId = bundle.getString("serverUserId");
+            isAdmin = bundle.getBoolean("isAdmin", false);
 
             tvUsername.setText(username);
         }
@@ -63,6 +65,11 @@ public class EventsActivity extends AppCompatActivity {
                 serverUserId
         );
 
+        bundle.putBoolean(
+                "isAdmin",
+                isAdmin
+        );
+
         fragment.setArguments(bundle);
 
         loadFragment(fragment);
@@ -88,6 +95,11 @@ public class EventsActivity extends AppCompatActivity {
         bundle.putString(
                 "serverUserId",
                 serverUserId
+        );
+
+        bundle.putBoolean(
+                "isAdmin",
+                isAdmin
         );
 
         fragment.setArguments(bundle);

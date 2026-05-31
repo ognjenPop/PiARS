@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     EditText etRegisterUsername;
     EditText etRegisterEmail;
     EditText etRegisterPassword;
+
+    CheckBox cbRegisterAdmin;
 
     DatabaseHelper databaseHelper;
     ServerHelper serverHelper;
@@ -56,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         etRegisterUsername = findViewById(R.id.etRegisterUsername);
         etRegisterEmail = findViewById(R.id.etRegisterEmail);
         etRegisterPassword = findViewById(R.id.etRegisterPassword);
+
+        cbRegisterAdmin = findViewById(R.id.cbRegisterAdmin);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,16 +131,18 @@ public class MainActivity extends AppCompatActivity {
                     String serverUserId = response.getString("_id");
                     String username = response.getString("username");
                     String email = response.getString("email");
+                    boolean isAdmin = response.optBoolean("isAdmin", false);
 
                     if (!databaseHelper.checkUsernameExists(username)) {
                         databaseHelper.insertUser(
                                 username,
                                 email,
-                                etLoginPassword.getText().toString()
+                                etLoginPassword.getText().toString(),
+                                isAdmin
                         );
                     }
 
-                    openEventsActivity(username, email, serverUserId);
+                    openEventsActivity(username, email, serverUserId, isAdmin);
 
                 } catch (JSONException e) {
                     Toast.makeText(
@@ -162,6 +169,8 @@ public class MainActivity extends AppCompatActivity {
         String email = etRegisterEmail.getText().toString();
         String password = etRegisterPassword.getText().toString();
 
+        boolean isAdmin = cbRegisterAdmin.isChecked();
+
         if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
             Toast.makeText(
                     MainActivity.this,
@@ -178,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             requestBody.put("username", username);
             requestBody.put("email", email);
             requestBody.put("password", password);
-            requestBody.put("isAdmin", false);
+            requestBody.put("isAdmin", isAdmin);
         } catch (JSONException e) {
             Toast.makeText(
                     MainActivity.this,
@@ -196,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
                     String serverUserId = response.getString("_id");
                     String username = response.getString("username");
                     String email = response.getString("email");
+                    boolean isAdmin = response.optBoolean("isAdmin", false);
 
                     if (!databaseHelper.checkUsernameExists(username)
                             && !databaseHelper.checkEmailExists(email)) {
@@ -203,7 +213,8 @@ public class MainActivity extends AppCompatActivity {
                         databaseHelper.insertUser(
                                 username,
                                 email,
-                                etRegisterPassword.getText().toString()
+                                etRegisterPassword.getText().toString(),
+                                isAdmin
                         );
                     }
 
@@ -213,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT
                     ).show();
 
-                    openEventsActivity(username, email, serverUserId);
+                    openEventsActivity(username, email, serverUserId, isAdmin);
 
                 } catch (JSONException e) {
                     Toast.makeText(
@@ -235,13 +246,18 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void openEventsActivity(String username, String email, String serverUserId) {
+    private void openEventsActivity(String username,
+                                    String email,
+                                    String serverUserId,
+                                    boolean isAdmin) {
+
         Intent intent = new Intent(MainActivity.this, EventsActivity.class);
 
         Bundle bundle = new Bundle();
         bundle.putString("username", username);
         bundle.putString("email", email);
         bundle.putString("serverUserId", serverUserId);
+        bundle.putBoolean("isAdmin", isAdmin);
 
         intent.putExtras(bundle);
         startActivity(intent);

@@ -3,8 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
+    android:orientation="vertical">
 
     <!-- Pocetni layout -->
     <LinearLayout
@@ -42,14 +41,12 @@
             android:layout_height="wrap_content"
             android:hint="@string/username" />
 
-
         <EditText
             android:id="@+id/etLoginPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
             android:inputType="textPassword" />
-
 
         <Button
             android:id="@+id/btnDoLogin"
@@ -66,7 +63,6 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:visibility="gone">
-
 
         <!-- Username -->
         <LinearLayout
@@ -88,7 +84,6 @@
                 android:layout_weight="1"
                 android:hint="@string/username" />
         </LinearLayout>
-
 
         <!-- Email -->
         <LinearLayout
@@ -112,7 +107,6 @@
                 android:inputType="textEmailAddress" />
         </LinearLayout>
 
-
         <!-- Password -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -135,7 +129,12 @@
                 android:inputType="textPassword" />
         </LinearLayout>
 
-
+        <!-- Admin checkbox -->
+        <CheckBox
+            android:id="@+id/cbRegisterAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/register_as_admin" />
 
         <!-- Dugme -->
         <Button

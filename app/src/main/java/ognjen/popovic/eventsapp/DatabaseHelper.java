@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "EventsApp.db";
-    private static final int DATABASE_VERSION = 6;
+    private static final int DATABASE_VERSION = 7;
 
     public static final String TABLE_USERS = "users";
 
@@ -20,6 +20,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COLUMN_USER_USERNAME = "username";
     public static final String COLUMN_USER_EMAIL = "email";
     public static final String COLUMN_USER_PASSWORD = "lozinka";
+    public static final String COLUMN_USER_IS_ADMIN = "isAdmin";
 
     public static final String TABLE_EVENTS = "events";
 
@@ -58,7 +59,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     COLUMN_USER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     COLUMN_USER_USERNAME + " TEXT UNIQUE NOT NULL, " +
                     COLUMN_USER_EMAIL + " TEXT UNIQUE NOT NULL, " +
-                    COLUMN_USER_PASSWORD + " TEXT NOT NULL" +
+                    COLUMN_USER_PASSWORD + " TEXT NOT NULL, " +
+                    COLUMN_USER_IS_ADMIN + " INTEGER DEFAULT 0 CHECK(" +
+                    COLUMN_USER_IS_ADMIN + " IN (0, 1))" +
                     ");";
 
     private static final String CREATE_TABLE_EVENTS =
@@ -148,6 +151,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public boolean insertUser(String username, String email, String password) {
+        return insertUser(username, email, password, false);
+    }
+
+    public boolean insertUser(String username,
+                              String email,
+                              String password,
+                              boolean isAdmin) {
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         String hashedPassword = PasswordHasher.hashPassword(password);
@@ -156,6 +167,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         values.put(COLUMN_USER_USERNAME, username);
         values.put(COLUMN_USER_EMAIL, email);
         values.put(COLUMN_USER_PASSWORD, hashedPassword);
+        values.put(COLUMN_USER_IS_ADMIN, isAdmin ? 1 : 0);
 
         long result = db.insert(TABLE_USERS, null, values);
 
@@ -221,6 +233,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             cursor.close();
 
             return PasswordHasher.verifyPassword(password, storedPassword);
+        }
+
+        cursor.close();
+
+        return false;
+    }
+
+    public boolean isUserAdmin(String username) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                TABLE_USERS,
+                new String[]{COLUMN_USER_IS_ADMIN},
+                COLUMN_USER_USERNAME + " = ?",
+                new String[]{username},
+                null,
+                null,
+                null
+        );
+
+        if (cursor.moveToFirst()) {
+            int adminValue = cursor.getInt(
+                    cursor.getColumnIndexOrThrow(COLUMN_USER_IS_ADMIN)
+            );
+
+            cursor.close();
+
+            return adminValue == 1;
         }
 
         cursor.close();

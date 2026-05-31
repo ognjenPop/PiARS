@@ -33,6 +33,7 @@ public class EventsFragment extends Fragment {
 
     private String username;
     private String serverUserId;
+    private boolean isAdmin;
 
     public EventsFragment() {
 
@@ -53,6 +54,7 @@ public class EventsFragment extends Fragment {
         if (getArguments() != null) {
             username = getArguments().getString("username");
             serverUserId = getArguments().getString("serverUserId");
+            isAdmin = getArguments().getBoolean("isAdmin", false);
         }
 
         databaseHelper =
@@ -84,6 +86,12 @@ public class EventsFragment extends Fragment {
 
         btnAddEvent =
                 view.findViewById(R.id.btnAddEvent);
+
+        if (isAdmin) {
+            btnAddEvent.setVisibility(View.VISIBLE);
+        } else {
+            btnAddEvent.setVisibility(View.GONE);
+        }
 
         adapter = new EventAdapter(
                 getContext(),
