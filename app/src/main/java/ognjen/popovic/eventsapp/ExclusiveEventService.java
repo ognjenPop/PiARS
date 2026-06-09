@@ -1,9 +1,11 @@
 package ognjen.popovic.eventsapp;
 
+import android.app.AlarmManager;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
@@ -21,7 +23,12 @@ import java.util.Locale;
 public class ExclusiveEventService extends Service {
 
     private static final String CHANNEL_ID = "exclusive_event_channel";
-    private static final int NOTIFICATION_ID = 1001;
+
+    private static final int NOTIFICATION_ID_OPEN_WINDOW = 1001;
+    private static final int NOTIFICATION_ID_CLOSED_WINDOW = 1002;
+
+    private static final String ACTION_WINDOW_CLOSED =
+            "ognjen.popovic.eventsapp.ACTION_WINDOW_CLOSED";
 
     public static final String PREFS_EXCLUSIVE_EVENTS =
             "exclusive_events_prefs";
@@ -50,6 +57,19 @@ public class ExclusiveEventService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+
+        if (intent != null
+                && ACTION_WINDOW_CLOSED.equals(intent.getAction())) {
+
+            String eventName =
+                    intent.getStringExtra("eventName");
+
+            showWindowClosedNotification(eventName);
+
+            stopSelf();
+
+            return START_NOT_STICKY;
+        }
 
         createExclusiveEvent();
 
@@ -134,6 +154,11 @@ public class ExclusiveEventService extends Service {
                                     endTime
                             );
 
+                            scheduleWindowClosedNotification(
+                                    event,
+                                    endTime
+                            );
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -171,6 +196,43 @@ public class ExclusiveEventService extends Service {
         );
 
         editor.apply();
+    }
+
+    private void scheduleWindowClosedNotification(Event event,
+                                                  long endTime) {
+
+        Intent intent =
+                new Intent(
+                        this,
+                        ExclusiveEventService.class
+                );
+
+        intent.setAction(ACTION_WINDOW_CLOSED);
+
+        intent.putExtra(
+                "eventName",
+                event.getName()
+        );
+
+        PendingIntent pendingIntent =
+                PendingIntent.getService(
+                        this,
+                        event.getServerEventId().hashCode(),
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT |
+                                PendingIntent.FLAG_IMMUTABLE
+                );
+
+        AlarmManager alarmManager =
+                (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        if (alarmManager != null) {
+            alarmManager.set(
+                    AlarmManager.RTC_WAKEUP,
+                    endTime,
+                    pendingIntent
+            );
+        }
     }
 
     private Event createEventFromJson(JSONObject eventObject) throws JSONException {
@@ -327,7 +389,33 @@ public class ExclusiveEventService extends Service {
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         notificationManager.notify(
-                NOTIFICATION_ID,
+                NOTIFICATION_ID_OPEN_WINDOW,
+                builder.build()
+        );
+    }
+
+    private void showWindowClosedNotification(String eventName) {
+
+        if (eventName == null || eventName.isEmpty()) {
+            eventName = "Ekskluzivni dogadjaj";
+        }
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, CHANNEL_ID)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("Prozor za prijavu je zatvoren")
+                        .setContentText(
+                                "Prijava za " + eventName +
+                                        " je zatvorena. Sledeca prilika je za 24h."
+                        )
+                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setAutoCancel(true);
+
+        NotificationManager notificationManager =
+                (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        notificationManager.notify(
+                NOTIFICATION_ID_CLOSED_WINDOW,
                 builder.build()
         );
     }
