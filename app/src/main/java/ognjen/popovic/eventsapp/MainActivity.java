@@ -1,7 +1,15 @@
 package ognjen.popovic.eventsapp;
 
+import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
@@ -15,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 101;
 
     LinearLayout startLayout;
     LinearLayout loginLayout;
@@ -40,6 +50,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        requestNotificationPermission();
+        scheduleExclusiveEventService();
 
         databaseHelper = new DatabaseHelper(this);
         serverHelper = new ServerHelper(this);
@@ -93,6 +106,60 @@ public class MainActivity extends AppCompatActivity {
                 registerUserOnServer();
             }
         });
+    }
+
+    private void requestNotificationPermission() {
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED) {
+
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_REQUEST_CODE
+                );
+            }
+        }
+    }
+
+    private void scheduleExclusiveEventService() {
+
+        Intent intent =
+                new Intent(
+                        this,
+                        ExclusiveEventService.class
+                );
+
+        PendingIntent pendingIntent =
+                PendingIntent.getService(
+                        this,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_UPDATE_CURRENT |
+                                PendingIntent.FLAG_IMMUTABLE
+                );
+
+        AlarmManager alarmManager =
+                (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+
+        long intervalMillis =
+                24 * 60 * 60 * 1000;
+
+        long firstTriggerTime =
+                System.currentTimeMillis() + intervalMillis;
+
+        if (alarmManager != null) {
+            alarmManager.setInexactRepeating(
+                    AlarmManager.RTC_WAKEUP,
+                    firstTriggerTime,
+                    intervalMillis,
+                    pendingIntent
+            );
+        }
     }
 
     private void loginUserOnServer() {
