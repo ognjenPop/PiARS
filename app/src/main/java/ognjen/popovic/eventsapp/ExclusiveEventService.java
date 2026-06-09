@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.IBinder;
 
@@ -21,6 +22,15 @@ public class ExclusiveEventService extends Service {
 
     private static final String CHANNEL_ID = "exclusive_event_channel";
     private static final int NOTIFICATION_ID = 1001;
+
+    public static final String PREFS_EXCLUSIVE_EVENTS =
+            "exclusive_events_prefs";
+
+    public static final String EXCLUSIVE_EVENT_END_TIME_PREFIX =
+            "exclusive_event_end_time_";
+
+    private static final long EXCLUSIVE_WINDOW_DURATION =
+            5 * 60 * 1000;
 
     private DatabaseHelper databaseHelper;
     private ServerHelper serverHelper;
@@ -110,7 +120,19 @@ public class ExclusiveEventService extends Service {
 
                             databaseHelper.insertOrUpdateServerEvent(event);
 
-                            showExclusiveEventNotification(event);
+                            long endTime =
+                                    System.currentTimeMillis()
+                                            + EXCLUSIVE_WINDOW_DURATION;
+
+                            saveExclusiveEventEndTime(
+                                    event.getServerEventId(),
+                                    endTime
+                            );
+
+                            showExclusiveEventNotification(
+                                    event,
+                                    endTime
+                            );
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -125,6 +147,30 @@ public class ExclusiveEventService extends Service {
                     }
                 }
         );
+    }
+
+    private void saveExclusiveEventEndTime(String serverEventId,
+                                           long endTime) {
+
+        if (serverEventId == null || serverEventId.isEmpty()) {
+            return;
+        }
+
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(
+                        PREFS_EXCLUSIVE_EVENTS,
+                        MODE_PRIVATE
+                );
+
+        SharedPreferences.Editor editor =
+                sharedPreferences.edit();
+
+        editor.putLong(
+                EXCLUSIVE_EVENT_END_TIME_PREFIX + serverEventId,
+                endTime
+        );
+
+        editor.apply();
     }
 
     private Event createEventFromJson(JSONObject eventObject) throws JSONException {
@@ -205,7 +251,26 @@ public class ExclusiveEventService extends Service {
         return R.drawable.exit;
     }
 
-    private void showExclusiveEventNotification(Event event) {
+    private void showExclusiveEventNotification(Event event,
+                                                long endTime) {
+
+        SharedPreferences userPreferences =
+                getSharedPreferences(
+                        "logged_user_prefs",
+                        MODE_PRIVATE
+                );
+
+        String username =
+                userPreferences.getString(
+                        "username",
+                        ""
+                );
+
+        String serverUserId =
+                userPreferences.getString(
+                        "serverUserId",
+                        ""
+                );
 
         Intent intent =
                 new Intent(
@@ -221,6 +286,16 @@ public class ExclusiveEventService extends Service {
         intent.putExtra(
                 "serverEventId",
                 event.getServerEventId()
+        );
+
+        intent.putExtra(
+                "username",
+                username
+        );
+
+        intent.putExtra(
+                "serverUserId",
+                serverUserId
         );
 
         intent.setFlags(
@@ -244,7 +319,9 @@ public class ExclusiveEventService extends Service {
                         .setContentText("Imate 5 minuta da se prijavite na ekskluzivni dogadjaj")
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setAutoCancel(true)
-                        .setContentIntent(pendingIntent);
+                        .setContentIntent(pendingIntent)
+                        .setWhen(endTime)
+                        .setUsesChronometer(true);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

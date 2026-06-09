@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import android.content.SharedPreferences;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -317,6 +318,27 @@ public class MainActivity extends AppCompatActivity {
                                     String email,
                                     String serverUserId,
                                     boolean isAdmin) {
+
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(
+                        "logged_user_prefs",
+                        MODE_PRIVATE
+                );
+
+        SharedPreferences.Editor editor =
+                sharedPreferences.edit();
+
+        editor.putString(
+                "username",
+                username
+        );
+
+        editor.putString(
+                "serverUserId",
+                serverUserId
+        );
+
+        editor.apply();
 
         Intent intent = new Intent(MainActivity.this, EventsActivity.class);
 

@@ -1,5 +1,6 @@
 package ognjen.popovic.eventsapp;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -71,15 +72,28 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
 
             showEventData(currentEvent);
+            checkExclusiveEventWindow();
         }
 
         btnDetailsInterested.setOnClickListener(v ->
                 sendAttendanceToServer(DatabaseHelper.STATUS_INTERESTED)
         );
 
-        btnDetailsAttending.setOnClickListener(v ->
-                sendAttendanceToServer(DatabaseHelper.STATUS_ATTENDING)
-        );
+        btnDetailsAttending.setOnClickListener(v -> {
+
+            if (isExclusiveEventExpired()) {
+
+                Toast.makeText(
+                        EventDetailsActivity.this,
+                        "Vreme za prijavu na ekskluzivni dogadjaj je isteklo",
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                return;
+            }
+
+            sendAttendanceToServer(DatabaseHelper.STATUS_ATTENDING);
+        });
     }
 
     private void showEventData(Event event) {
@@ -126,6 +140,44 @@ public class EventDetailsActivity extends AppCompatActivity {
                     )
             );
         }
+    }
+
+    private void checkExclusiveEventWindow() {
+
+        if (isExclusiveEventExpired()) {
+
+            btnDetailsAttending.setEnabled(false);
+            btnDetailsAttending.setText("ATTENDING EXPIRED");
+
+        } else {
+
+            btnDetailsAttending.setEnabled(true);
+        }
+    }
+
+    private boolean isExclusiveEventExpired() {
+
+        if (serverEventId == null || serverEventId.isEmpty()) {
+            return false;
+        }
+
+        SharedPreferences sharedPreferences =
+                getSharedPreferences(
+                        ExclusiveEventService.PREFS_EXCLUSIVE_EVENTS,
+                        MODE_PRIVATE
+                );
+
+        long endTime =
+                sharedPreferences.getLong(
+                        ExclusiveEventService.EXCLUSIVE_EVENT_END_TIME_PREFIX + serverEventId,
+                        -1
+                );
+
+        if (endTime == -1) {
+            return false;
+        }
+
+        return System.currentTimeMillis() > endTime;
     }
 
     private void sendAttendanceToServer(String commitment) {
@@ -257,5 +309,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             tvDetailsFreePlaces.setVisibility(View.GONE);
         }
+
+        checkExclusiveEventWindow();
     }
 }
